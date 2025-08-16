@@ -247,7 +247,7 @@
                 ddl: [
                     { id: 'create', name: 'CREATE TABLE', desc: 'Creates a new table in the database.', query: 'CREATE TABLE projects (\n    id INT PRIMARY KEY,\n    name VARCHAR(100) NOT NULL,\n    start_date DATE\n);', tip: 'Define data types and constraints for each column to ensure data integrity.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" created successfully.</p>' },
                     { id: 'alter', name: 'ALTER TABLE', desc: 'Modifies the structure of an existing table.', query: 'ALTER TABLE projects\nADD COLUMN budget DECIMAL(10, 2);', tip: 'You can use `ALTER TABLE` to add, drop, or modify columns, constraints, and indexes.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" altered successfully.</p>' },
-                    { id: 'drop', name: 'DROP TABLE', desc: 'PermanENTLY deletes a table and all its data.', query: 'DROP TABLE projects;', tip: 'This action is irreversible. Use with extreme caution!', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" dropped successfully.</p>' },
+                    { id: 'drop', name: 'DROP TABLE', desc: 'Permanently deletes a table and all its data.', query: 'DROP TABLE projects;', tip: 'This action is irreversible. Use with extreme caution!', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" dropped successfully.</p>' },
                 ]
             };
 
