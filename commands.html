@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Command Simulator - SQL Mastery Guide</title>
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cellipse cx='12' cy='5' rx='9' ry='3'%3e%3c/ellipse%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'%3e%3c/path%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'%3e%3c/path%3e%3c/svg%3e">
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3e%3cdefs%3e%3clinearGradient id='holographic-orange' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3e%3cstop offset='0%25' style='stop-color:%23fb923c;stop-opacity:1' /%3e%3cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3e%3c/linearGradient%3e%3c/defs%3e%3cellipse cx='12' cy='5' rx='9' ry='3' fill='none' stroke='url(%23holographic-orange)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3' fill='none' stroke='url(%23holographic-orange)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5' fill='none' stroke='url(%23holographic-orange)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Plus Jakarta Sans for body, Lexend for headings -->
@@ -59,18 +59,6 @@
         .command-btn.active {
             background-color: var(--theme-dark);
             color: white;
-        }
-        .spinner {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 2px solid white;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         /* Simple fade-in animation for result */
         @keyframes fadeInResult {
@@ -136,7 +124,7 @@
         <section id="commands" class="tab-panel fade-in">
             <div class="text-center mb-10">
                 <h2 class="text-2xl md:text-3xl font-bold font-heading text-slate-800">Core Command Simulator</h2>
-                <p class="max-w-3xl mx-auto text-slate-500 mt-3 text-sm md:text-base">Explore the building blocks of SQL with this interactive simulator. Select a command, review the example, run it, and even get an AI-powered explanation of the code.</p>
+                <p class="max-w-3xl mx-auto text-slate-500 mt-3 text-sm md:text-base">Explore the building blocks of SQL with this interactive simulator. Select a command, review the example, run it, and see a breakdown of how it works.</p>
             </div>
 
             <!-- Sample Data Tables -->
@@ -208,17 +196,12 @@
                             <button id="run-query-btn" class="w-full bg-orange-500 text-white font-bold py-2 px-4 rounded-md hover:bg-orange-600 transition-colors shadow flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined">play_circle</span>Run Query
                             </button>
-                            <button id="explain-query-btn" class="w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-700 transition-colors shadow flex items-center justify-center disabled:opacity-70 disabled:cursor-wait">
-                               <span class="btn-text flex items-center gap-2"><span class="material-symbols-outlined">auto_awesome</span>Explain Query</span>
-                               <div class="spinner hidden ml-2"></div>
-                            </button>
-                             <button id="suggest-challenge-btn" class="sm:col-span-2 w-full bg-slate-800 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-900 transition-colors shadow flex items-center justify-center disabled:opacity-70 disabled:cursor-wait">
-                               <span class="btn-text flex items-center gap-2"><span class="material-symbols-outlined">lightbulb</span>Suggest a Challenge ✨</span>
-                               <div class="spinner hidden ml-2"></div>
+                            <button id="explain-query-btn" class="w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-700 transition-colors shadow flex items-center justify-center gap-2">
+                               <span class="material-symbols-outlined">help</span>Explain Query
                             </button>
                         </div>
                         <div id="output-container" class="bg-white p-4 rounded-lg border border-slate-200 min-h-[200px] overflow-auto text-sm">
-                            <p class="text-slate-400">Click "Run Query" to see simulated output or use the ✨ AI features!</p>
+                            <p class="text-slate-400">Click "Run Query" to see the result or "Explain Query" for a breakdown.</p>
                         </div>
                     </div>
                 </div>
@@ -230,24 +213,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             const commands = {
                 dql: [
-                    { id: 'select', name: 'SELECT...WHERE', desc: 'Retrieves data from a table, filtered by a specific condition.', query: "SELECT first_name, last_name, salary\nFROM employees\nWHERE salary > 60000;", tip: 'Use `WHERE` to narrow down results and improve query performance.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th><th>salary</th></tr></thead><tbody><tr><td>Jane</td><td>Smith</td><td>62000</td></tr><tr><td>Peter</td><td>Jones</td><td>71000</td></tr><tr><td>Michael</td><td>Brown</td><td>80000</td></tr><tr><td>Sarah</td><td>Davis</td><td>95000</td></tr><tr><td>Jessica</td><td>Wilson</td><td>68000</td></tr><tr><td>Emily</td><td>Taylor</td><td>110000</td></tr></tbody></table></div>` },
-                    { id: 'join', name: 'JOIN', desc: 'Combines rows from two or more tables based on a related column.', query: "SELECT e.first_name, d.name\nFROM employees e\nJOIN departments d ON e.dept_id = d.id;", tip: '`JOIN` (or `INNER JOIN`) is one of the most powerful features of SQL for relational data.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>name</th></tr></thead><tbody><tr><td>John</td><td>Sales</td></tr><tr><td>Jane</td><td>Marketing</td></tr><tr><td>Peter</td><td>Sales</td></tr><tr><td>Jennifer</td><td>HR</td></tr><tr><td>Michael</td><td>Engineering</td></tr><tr><td>Sarah</td><td>Engineering</td></tr><tr><td>Chris</td><td>Marketing</td></tr><tr><td>Jessica</td><td>Sales</td></tr><tr><td>David</td><td>HR</td></tr><tr><td>Emily</td><td>Finance</td></tr></tbody></table></div>` },
-                    { id: 'like', name: 'LIKE', desc: 'Searches for a specified pattern in a column.', query: "SELECT first_name, last_name\nFROM employees\nWHERE first_name LIKE 'J%';", tip: 'The percent sign `%` is a wildcard that matches any sequence of characters.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th></tr></thead><tbody><tr><td>John</td><td>Doe</td></tr><tr><td>Jane</td><td>Smith</td></tr><tr><td>Jennifer</td><td>Lee</td></tr><tr><td>Jessica</td><td>Wilson</td></tr></tbody></table></div>` },
-                    { id: 'in', name: 'IN', desc: 'Specifies multiple values in a WHERE clause.', query: "SELECT first_name, last_name\nFROM employees\nWHERE dept_id IN (2, 3);", tip: '`IN` is a shorthand for multiple `OR` conditions.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th></tr></thead><tbody><tr><td>Jane</td><td>Smith</td></tr><tr><td>Jennifer</td><td>Lee</td></tr><tr><td>Chris</td><td>Miller</td></tr><tr><td>David</td><td>Moore</td></tr></tbody></table></div>` },
-                    { id: 'between', name: 'BETWEEN', desc: 'Selects values within a given range. The values can be numbers, text, or dates.', query: "SELECT first_name, salary\nFROM employees\nWHERE salary BETWEEN 50000 AND 65000;", tip: 'The `BETWEEN` operator is inclusive: begin and end values are included.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>salary</th></tr></thead><tbody><tr><td>John</td><td>55000</td></tr><tr><td>Jane</td><td>62000</td></tr><tr><td>Chris</td><td>51000</td></tr></tbody></table></div>` },
-                    { id: 'groupby', name: 'GROUP BY...HAVING', desc: 'Groups rows that have the same values into summary rows and filters these groups.', query: 'SELECT d.name, COUNT(e.id) as num_employees\nFROM employees e\nJOIN departments d ON e.dept_id = d.id\nGROUP BY d.name\nHAVING COUNT(e.id) > 1;', tip: '`WHERE` filters rows before grouping, `HAVING` filters groups after grouping.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>name</th><th>num_employees</th></tr></thead><tbody><tr><td>Sales</td><td>3</td></tr><tr><td>Marketing</td><td>2</td></tr><tr><td>HR</td><td>2</td></tr><tr><td>Engineering</td><td>2</td></tr></tbody></table></div>` },
-                    { id: 'case', name: 'CASE', desc: 'Goes through conditions and returns a value when the first condition is met.', query: "SELECT first_name, salary,\n  CASE\n    WHEN salary > 70000 THEN 'High Earner'\n    WHEN salary > 50000 THEN 'Mid Earner'\n    ELSE 'Standard Earner'\n  END as salary_level\nFROM employees;", tip: 'A `CASE` statement is like an IF-THEN-ELSE statement in other languages.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>salary</th><th>salary_level</th></tr></thead><tbody><tr><td>John</td><td>55000</td><td>Mid Earner</td></tr><tr><td>Jane</td><td>62000</td><td>Mid Earner</td></tr><tr><td>Peter</td><td>71000</td><td>High Earner</td></tr><tr><td>Jennifer</td><td>48000</td><td>Standard Earner</td></tr><tr><td>Michael</td><td>80000</td><td>High Earner</td></tr><tr><td>Sarah</td><td>95000</td><td>High Earner</td></tr><tr><td>Chris</td><td>51000</td><td>Mid Earner</td></tr><tr><td>Jessica</td><td>68000</td><td>Mid Earner</td></tr><tr><td>David</td><td>45000</td><td>Standard Earner</td></tr><tr><td>Emily</td><td>110000</td><td>High Earner</td></tr></tbody></table></div>` },
-                    { id: 'limitoffset', name: 'LIMIT...OFFSET', desc: 'Restricts the number of rows returned and specifies a starting point.', query: "SELECT first_name, last_name, salary\nFROM employees\nORDER BY id\nLIMIT 2 OFFSET 2;", tip: '`LIMIT` sets the max rows to return. `OFFSET` skips a number of rows before starting. Great for pagination!', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th><th>salary</th></tr></thead><tbody><tr><td>Peter</td><td>Jones</td><td>71000</td></tr><tr><td>Jennifer</td><td>Lee</td><td>48000</td></tr></tbody></table></div>` },
+                    { id: 'select', name: 'SELECT...WHERE', desc: 'Retrieves data from a table, filtered by a specific condition.', query: "SELECT first_name, last_name, salary\nFROM employees\nWHERE salary > 60000;", tip: 'Use `WHERE` to narrow down results and improve query performance.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th><th>salary</th></tr></thead><tbody><tr><td>Jane</td><td>Smith</td><td>62000</td></tr><tr><td>Peter</td><td>Jones</td><td>71000</td></tr><tr><td>Michael</td><td>Brown</td><td>80000</td></tr><tr><td>Sarah</td><td>Davis</td><td>95000</td></tr><tr><td>Jessica</td><td>Wilson</td><td>68000</td></tr><tr><td>Emily</td><td>Taylor</td><td>110000</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">SELECT first_name, last_name, salary</p><p class="text-slate-600">This line specifies exactly which columns you want to see in your result. You are asking the database to return the <code>first_name</code>, <code>last_name</code>, and <code>salary</code> for each record that matches your criteria.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">FROM employees</p><p class="text-slate-600">This tells the database which table to look in. All the data will be pulled from the <code>employees</code> table.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">WHERE salary > 60000</p><p class="text-slate-600">This is the filtering clause. It instructs the database to only include rows where the value in the <code>salary</code> column is greater than 60000. Any employee earning 60000 or less will be excluded from the final result.</p></div></div></div>` },
+                    { id: 'join', name: 'JOIN', desc: 'Combines rows from two or more tables based on a related column.', query: "SELECT e.first_name, d.name\nFROM employees e\nJOIN departments d ON e.dept_id = d.id;", tip: '`JOIN` (or `INNER JOIN`) is one of the most powerful features of SQL for relational data.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>name</th></tr></thead><tbody><tr><td>John</td><td>Sales</td></tr><tr><td>Jane</td><td>Marketing</td></tr><tr><td>Peter</td><td>Sales</td></tr><tr><td>Jennifer</td><td>HR</td></tr><tr><td>Michael</td><td>Engineering</td></tr><tr><td>Sarah</td><td>Engineering</td></tr><tr><td>Chris</td><td>Marketing</td></tr><tr><td>Jessica</td><td>Sales</td></tr><tr><td>David</td><td>HR</td></tr><tr><td>Emily</td><td>Finance</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">SELECT e.first_name, d.name</p><p class="text-slate-600">Selects the <code>first_name</code> column from the <code>employees</code> table (aliased as <code>e</code>) and the <code>name</code> column from the <code>departments</code> table (aliased as <code>d</code>).</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">FROM employees e JOIN departments d</p><p class="text-slate-600">Specifies that we are querying from the <code>employees</code> table and joining it with the <code>departments</code> table. The <code>e</code> and <code>d</code> are short aliases to make the query easier to read.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">ON e.dept_id = d.id</p><p class="text-slate-600">This is the join condition. It tells the database how to match rows from the two tables: connect a row from <code>employees</code> to a row in <code>departments</code> where the <code>dept_id</code> in the employees table is the same as the <code>id</code> in the departments table.</p></div></div></div>` },
+                    { id: 'like', name: 'LIKE', desc: 'Searches for a specified pattern in a column.', query: "SELECT first_name, last_name\nFROM employees\nWHERE first_name LIKE 'J%';", tip: 'The percent sign `%` is a wildcard that matches any sequence of characters.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th></tr></thead><tbody><tr><td>John</td><td>Doe</td></tr><tr><td>Jane</td><td>Smith</td></tr><tr><td>Jennifer</td><td>Lee</td></tr><tr><td>Jessica</td><td>Wilson</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">... WHERE first_name LIKE 'J%'</p><p class="text-slate-600">This is the filter. The <code>LIKE</code> operator is used for pattern matching in strings. The <code>%</code> is a wildcard character that matches any sequence of characters. So, this line finds all employees whose first name starts with 'J'.</p></div></div></div>` },
+                    { id: 'in', name: 'IN', desc: 'Specifies multiple values in a WHERE clause.', query: "SELECT first_name, last_name\nFROM employees\nWHERE dept_id IN (2, 3);", tip: '`IN` is a shorthand for multiple `OR` conditions.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th></tr></thead><tbody><tr><td>Jane</td><td>Smith</td></tr><tr><td>Jennifer</td><td>Lee</td></tr><tr><td>Chris</td><td>Miller</td></tr><tr><td>David</td><td>Moore</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">... WHERE dept_id IN (2, 3)</p><p class="text-slate-600">This clause filters the results to include only employees whose <code>dept_id</code> is either 2 or 3. It's a more concise way of writing <code>WHERE dept_id = 2 OR dept_id = 3</code>.</p></div></div></div>` },
+                    { id: 'between', name: 'BETWEEN', desc: 'Selects values within a given range. The values can be numbers, text, or dates.', query: "SELECT first_name, salary\nFROM employees\nWHERE salary BETWEEN 50000 AND 65000;", tip: 'The `BETWEEN` operator is inclusive: begin and end values are included.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>salary</th></tr></thead><tbody><tr><td>John</td><td>55000</td></tr><tr><td>Jane</td><td>62000</td></tr><tr><td>Chris</td><td>51000</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">... WHERE salary BETWEEN 50000 AND 65000</p><p class="text-slate-600">This clause filters the results to include employees whose salary falls within the range of 50,000 to 65,000. The <code>BETWEEN</code> operator includes both the start and end values in the range.</p></div></div></div>` },
+                    { id: 'groupby', name: 'GROUP BY...HAVING', desc: 'Groups rows that have the same values into summary rows and filters these groups.', query: 'SELECT d.name, COUNT(e.id) as num_employees\nFROM employees e\nJOIN departments d ON e.dept_id = d.id\nGROUP BY d.name\nHAVING COUNT(e.id) > 1;', tip: '`WHERE` filters rows before grouping, `HAVING` filters groups after grouping.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>name</th><th>num_employees</th></tr></thead><tbody><tr><td>Sales</td><td>3</td></tr><tr><td>Marketing</td><td>2</td></tr><tr><td>HR</td><td>2</td></tr><tr><td>Engineering</td><td>2</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">SELECT d.name, COUNT(e.id) as num_employees</p><p class="text-slate-600">Selects the department name and counts the number of employees in each group, giving this new count column the alias <code>num_employees</code>.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">... GROUP BY d.name</p><p class="text-slate-600">This groups all rows with the same department name together, so that the <code>COUNT()</code> function can count the employees for each unique department.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">HAVING COUNT(e.id) > 1</p><p class="text-slate-600">After grouping the employees by department, this clause filters those groups, keeping only the ones that have more than one employee.</p></div></div></div>` },
+                    { id: 'case', name: 'CASE', desc: 'Goes through conditions and returns a value when the first condition is met.', query: "SELECT first_name, salary,\n  CASE\n    WHEN salary > 70000 THEN 'High Earner'\n    WHEN salary > 50000 THEN 'Mid Earner'\n    ELSE 'Standard Earner'\n  END as salary_level\nFROM employees;", tip: 'A `CASE` statement is like an IF-THEN-ELSE statement in other languages.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>salary</th><th>salary_level</th></tr></thead><tbody><tr><td>John</td><td>55000</td><td>Mid Earner</td></tr><tr><td>Jane</td><td>62000</td><td>Mid Earner</td></tr><tr><td>Peter</td><td>71000</td><td>High Earner</td></tr><tr><td>Jennifer</td><td>48000</td><td>Standard Earner</td></tr><tr><td>Michael</td><td>80000</td><td>High Earner</td></tr><tr><td>Sarah</td><td>95000</td><td>High Earner</td></tr><tr><td>Chris</td><td>51000</td><td>Mid Earner</td></tr><tr><td>Jessica</td><td>68000</td><td>Mid Earner</td></tr><tr><td>David</td><td>45000</td><td>Standard Earner</td></tr><tr><td>Emily</td><td>110000</td><td>High Earner</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">CASE ... END as salary_level</p><p class="text-slate-600">Creates a new temporary column named <code>salary_level</code>.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">WHEN salary > 70000 THEN 'High Earner'</p><p class="text-slate-600">If an employee's salary is over 70000, their <code>salary_level</code> is set to 'High Earner'.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">WHEN salary > 50000 THEN 'Mid Earner'</p><p class="text-slate-600">If the first condition isn't met, this checks if the salary is over 50000 and sets the level to 'Mid Earner'.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">ELSE 'Standard Earner'</p><p class="text-slate-600">If none of the above conditions are met, the level is set to 'Standard Earner'.</p></div></div></div>` },
+                    { id: 'limitoffset', name: 'LIMIT...OFFSET', desc: 'Restricts the number of rows returned and specifies a starting point.', query: "SELECT first_name, last_name, salary\nFROM employees\nORDER BY id\nLIMIT 2 OFFSET 2;", tip: '`LIMIT` sets the max rows to return. `OFFSET` skips a number of rows before starting. Great for pagination!', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th><th>salary</th></tr></thead><tbody><tr><td>Peter</td><td>Jones</td><td>71000</td></tr><tr><td>Jennifer</td><td>Lee</td><td>48000</td></tr></tbody></table></div>`, explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">... ORDER BY id</p><p class="text-slate-600">First, it's important to sort the data to ensure the <code>LIMIT</code> and <code>OFFSET</code> are applied consistently. Here, we sort by employee <code>id</code>.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">LIMIT 2</p><p class="text-slate-600">This restricts the final output to a maximum of 2 rows.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">OFFSET 2</p><p class="text-slate-600">This tells the database to skip the first 2 rows from the sorted result set before it starts selecting the 2 rows specified by <code>LIMIT</code>.</p></div></div></div>` },
                 ],
                 dml: [
-                    { id: 'insert', name: 'INSERT INTO', desc: 'Adds a new row of data to a table.', query: "INSERT INTO departments (id, name)\nVALUES (11, 'Quality Assurance');", tip: 'Ensure the number of values matches the number of columns specified.', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>' },
-                    { id: 'update', name: 'UPDATE', desc: 'Modifies existing records in a table.', query: "UPDATE employees\nSET salary = 50000\nWHERE id = 104;", tip: 'Always use a `WHERE` clause with `UPDATE` unless you intend to change all rows!', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>' },
-                    { id: 'delete', name: 'DELETE', desc: 'Removes one or more rows from a table.', query: 'DELETE FROM employees\nWHERE id = 104;', tip: '`DELETE` removes rows, `TRUNCATE` removes all rows (faster), `DROP` removes the table itself.', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>' },
+                    { id: 'insert', name: 'INSERT INTO', desc: 'Adds a new row of data to a table.', query: "INSERT INTO departments (id, name)\nVALUES (11, 'Quality Assurance');", tip: 'Ensure the number of values matches the number of columns specified.', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>', explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">INSERT INTO departments (id, name)</p><p class="text-slate-600">This specifies that we are adding a new row into the <code>departments</code> table, and we will be providing values for the <code>id</code> and <code>name</code> columns.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">VALUES (11, 'Quality Assurance')</p><p class="text-slate-600">This provides the values for the new row, corresponding to the columns listed. <code>11</code> will be the <code>id</code>, and <code>'Quality Assurance'</code> will be the <code>name</code>.</p></div></div></div>` },
+                    { id: 'update', name: 'UPDATE', desc: 'Modifies existing records in a table.', query: "UPDATE employees\nSET salary = 50000\nWHERE id = 104;", tip: 'Always use a `WHERE` clause with `UPDATE` unless you intend to change all rows!', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>', explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">UPDATE employees</p><p class="text-slate-600">Specifies the <code>employees</code> table as the target for modification.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">SET salary = 50000</p><p class="text-slate-600">This line defines the change to be made: set the value in the <code>salary</code> column to <code>50000</code>.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">WHERE id = 104</p><p class="text-slate-600">This is a crucial filter. It ensures that the <code>UPDATE</code> operation only applies to the row where the employee <code>id</code> is 104. Without this, every row in the table would be updated.</p></div></div></div>` },
+                    { id: 'delete', name: 'DELETE', desc: 'Removes one or more rows from a table.', query: 'DELETE FROM employees\nWHERE id = 104;', tip: '`DELETE` removes rows, `TRUNCATE` removes all rows (faster), `DROP` removes the table itself.', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>', explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">DELETE FROM employees</p><p class="text-slate-600">Specifies that one or more rows will be removed from the <code>employees</code> table.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">WHERE id = 104</p><p class="text-slate-600">This clause identifies exactly which row(s) to delete. In this case, it's the employee with an <code>id</code> of 104.</p></div></div></div>` },
                 ],
                 ddl: [
-                    { id: 'create', name: 'CREATE TABLE', desc: 'Creates a new table in the database.', query: 'CREATE TABLE projects (\n    id INT PRIMARY KEY,\n    name VARCHAR(100) NOT NULL,\n    start_date DATE\n);', tip: 'Define data types and constraints for each column to ensure data integrity.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" created successfully.</p>' },
-                    { id: 'alter', name: 'ALTER TABLE', desc: 'Modifies the structure of an existing table.', query: 'ALTER TABLE projects\nADD COLUMN budget DECIMAL(10, 2);', tip: 'You can use `ALTER TABLE` to add, drop, or modify columns, constraints, and indexes.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" altered successfully.</p>' },
-                    { id: 'drop', name: 'DROP TABLE', desc: 'Permanently deletes a table and all its data.', query: 'DROP TABLE projects;', tip: 'This action is irreversible. Use with extreme caution!', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" dropped successfully.</p>' },
+                    { id: 'create', name: 'CREATE TABLE', desc: 'Creates a new table in the database.', query: 'CREATE TABLE projects (\n    id INT PRIMARY KEY,\n    name VARCHAR(100) NOT NULL,\n    start_date DATE\n);', tip: 'Define data types and constraints for each column to ensure data integrity.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" created successfully.</p>', explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">CREATE TABLE projects (...)</p><p class="text-slate-600">This command initiates the creation of a new table named <code>projects</code>.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">id INT PRIMARY KEY, ...</p><p class="text-slate-600">This defines the columns inside the table. <code>id</code> is an integer and a <code>PRIMARY KEY</code> (a unique, non-null identifier for each row). <code>name</code> is a variable-length string that cannot be null (<code>NOT NULL</code>). <code>start_date</code> is a date value.</p></div></div></div>` },
+                    { id: 'alter', name: 'ALTER TABLE', desc: 'Modifies the structure of an existing table.', query: 'ALTER TABLE projects\nADD COLUMN budget DECIMAL(10, 2);', tip: 'You can use `ALTER TABLE` to add, drop, or modify columns, constraints, and indexes.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" altered successfully.</p>', explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">ALTER TABLE projects</p><p class="text-slate-600">This indicates that the structure of the <code>projects</code> table is going to be changed.</p></div></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">ADD COLUMN budget DECIMAL(10, 2)</p><p class="text-slate-600">This specifies the change: add a new column named <code>budget</code>. The data type is <code>DECIMAL(10, 2)</code>, which means it can store a number with a total of 10 digits, with 2 of those digits after the decimal point.</p></div></div></div>` },
+                    { id: 'drop', name: 'DROP TABLE', desc: 'Permanently deletes a table and all its data.', query: 'DROP TABLE projects;', tip: 'This action is irreversible. Use with extreme caution!', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" dropped successfully.</p>', explanation: `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3"><h4 class="font-bold text-sm text-slate-800">Query Breakdown</h4><div class="flex items-start gap-2"><span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span><div><p class="font-semibold text-slate-700">DROP TABLE projects;</p><p class="text-slate-600">This command permanently deletes the entire <code>projects</code> table, including its structure, data, and any associated indexes or constraints. This action cannot be undone.</p></div></div></div>` },
                 ]
             };
 
@@ -260,7 +243,6 @@
             const outputContainer = document.getElementById('output-container');
             const runQueryBtn = document.getElementById('run-query-btn');
             const explainQueryBtn = document.getElementById('explain-query-btn');
-            const suggestChallengeBtn = document.getElementById('suggest-challenge-btn');
             const copyBtn = document.getElementById('copy-btn');
 
             let activeCategory = 'dql';
@@ -289,7 +271,7 @@
                     commandDesc.textContent = command.desc;
                     currentQuery.textContent = command.query;
                     commandTip.innerHTML = `<p><strong>Tip:</strong> ${command.tip}</p>`;
-                    outputContainer.innerHTML = '<p class="text-slate-400">Click "Run Query" to see simulated output or use the ✨ AI features!</p>';
+                    outputContainer.innerHTML = '<p class="text-slate-400">Click "Run Query" to see the result or "Explain Query" for a breakdown.</p>';
                 }
             }
 
@@ -300,125 +282,12 @@
                 }
             }
             
-            async function callGemini(prompt, button, retries = 3, delay = 1000) {
-                const spinner = button.querySelector('.spinner');
-                const btnText = button.querySelector('.btn-text');
-                const originalText = btnText.innerHTML;
-
-                button.disabled = true;
-                spinner.classList.remove('hidden');
-                btnText.textContent = 'Thinking...';
-                outputContainer.innerHTML = '<div class="flex items-center justify-center h-full"><div class="spinner !border-slate-300 !border-t-slate-600"></div></div>';
-
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        if (response.status === 429 && retries > 0) {
-                            await new Promise(res => setTimeout(res, delay));
-                            return callGemini(prompt, button, retries - 1, delay * 2); 
-                        }
-                        throw new Error(`API error: ${response.statusText}`);
-                    }
-
-                    const result = await response.json();
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        return result.candidates[0].content.parts[0].text;
-                    } else {
-                        throw new Error("Invalid response structure from API.");
-                    }
-                } catch (error) {
-                    console.error("Gemini API call failed:", error);
-                    return `<p class="text-red-500">Sorry, there was an error getting a response. Please try again.</p>`;
-                } finally {
-                    button.disabled = false;
-                    spinner.classList.add('hidden');
-                    btnText.innerHTML = originalText;
-                }
-            }
-            
-            async function handleExplainQuery() {
+            function handleExplainQuery() {
                 const command = commands[activeCategory].find(c => c.id === activeCommandId);
-                if (!command) return;
-
-                const prompt = `Explain the following SQL query in simple, beginner-friendly terms. Break down what each line does. Format your response as a JSON object with a "title" (string) and "steps" (an array of objects, where each object has a "clause" and "description"). Do not use any markdown formatting. The query is: \n\n${command.query}`;
-                let responseText = await callGemini(prompt, explainQueryBtn);
-                
-                try {
-                     if (responseText.startsWith("```json")) {
-                        responseText = responseText.substring(7, responseText.length - 3).trim();
-                    } else if (responseText.startsWith("```")) {
-                         responseText = responseText.substring(3, responseText.length - 3).trim();
-                    }
-                    const jsonResponse = JSON.parse(responseText);
-                    
-                    let html = `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3">
-                                    <h4 class="font-bold text-sm text-slate-800">${jsonResponse.title}</h4>`;
-                    
-                    jsonResponse.steps.forEach(step => {
-                        html += `
-                            <div class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-orange-500 text-base mt-0.5">arrow_right_alt</span>
-                                <div>
-                                    <p class="font-semibold text-slate-700">${step.clause}</p>
-                                    <p class="text-slate-600">${step.description}</p>
-                                </div>
-                            </div>`;
-                    });
-
-                    html += `</div>`;
-                    outputContainer.innerHTML = html;
-
-                } catch (e) {
-                     console.error("Failed to parse JSON for explanation:", e, "Raw response:", responseText);
-                     outputContainer.innerHTML = `<p class="text-red-500">Sorry, there was an error formatting the explanation. Please try again.</p>`;
+                if (command && command.explanation) {
+                    outputContainer.innerHTML = command.explanation;
                 }
             }
-            
-            async function handleSuggestChallenge() {
-                const command = commands[activeCategory].find(c => c.id === activeCommandId);
-                if (!command) return;
-
-                const prompt = `Based on the provided sample tables ('employees' with columns id, first_name, last_name, salary, dept_id and 'departments' with columns id, name), create a simple SQL practice problem that requires using a ${command.name}. The problem should be a short question. Then, provide the SQL query that solves it. Format the response as a JSON object with two keys: "problem" and "solution". Do not wrap the JSON in markdown backticks.`;
-                let responseText = await callGemini(prompt, suggestChallengeBtn);
-
-                try {
-                    // Clean the response text to remove markdown code block delimiters
-                    if (responseText.startsWith("```json")) {
-                        responseText = responseText.substring(7, responseText.length - 3).trim();
-                    } else if (responseText.startsWith("```")) {
-                         responseText = responseText.substring(3, responseText.length - 3).trim();
-                    }
-
-                    const jsonResponse = JSON.parse(responseText);
-                    outputContainer.innerHTML = `
-                        <div class="p-2 bg-slate-50 rounded-md text-xs space-y-3">
-                            <p class="font-semibold">Challenge:</p>
-                            <p>${jsonResponse.problem}</p>
-                            <details class="mt-2">
-                                <summary class="cursor-pointer text-orange-600 font-medium">Show Solution</summary>
-                                <div class="mt-2 p-2 bg-slate-800 text-white rounded">
-                                    <pre><code>${jsonResponse.solution}</code></pre>
-                                </div>
-                            </details>
-                        </div>`;
-                } catch (e) {
-                    console.error("Failed to parse JSON from Gemini:", e, "Raw response:", responseText);
-                    outputContainer.innerHTML = `<p class="text-red-500">Sorry, there was an error generating the challenge. Please try again.</p>`;
-                }
-            }
-
 
             function handleCopy() {
                 const textToCopy = currentQuery.textContent;
@@ -459,7 +328,6 @@
 
             runQueryBtn.addEventListener('click', handleRunQuery);
             explainQueryBtn.addEventListener('click', handleExplainQuery);
-            suggestChallengeBtn.addEventListener('click', handleSuggestChallenge);
             copyBtn.addEventListener('click', handleCopy);
 
             renderCommandButtons();
