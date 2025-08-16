@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Foundations - SQL Mastery Guide</title>
+    <!-- New Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cellipse cx='12' cy='5' rx='9' ry='3'%3e%3c/ellipse%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'%3e%3c/path%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'%3e%3c/path%3e%3c/svg%3e">
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Lexend for headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lexend:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        /* Custom styles for the revamped Foundations page */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc; /* Light gray background */
+            color: #334155; /* Darker text for readability */
+        }
+        .font-heading {
+            font-family: 'Lexend', sans-serif;
+        }
+        .concept-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+        }
+        code:not(pre code) {
+            background-color: #eef2ff;
+            color: #4338ca;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        pre {
+            white-space: pre-wrap; /* Allows code to wrap */
+            word-wrap: break-word; /* Breaks long words if necessary */
+        }
+        pre code {
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 pt-16">
+    <!-- Header Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg fixed top-0 left-0 right-0 z-10 border-b border-slate-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Home Button -->
+                <a href="index.html" class="flex items-center gap-2 text-slate-800 hover:text-indigo-600 transition-colors">
+                    <span class="material-symbols-outlined">home</span>
+                    <span class="font-bold font-heading text-lg">Home</span>
+                </a>
+
+                <!-- Dropdown Navigation -->
+                <div class="relative" id="dropdown-menu">
+                    <button id="dropdown-button" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-md text-sm font-semibold text-slate-700 transition-colors">
+                        Navigate
+                        <span class="material-symbols-outlined text-base">expand_more</span>
+                    </button>
+                    <div id="dropdown-content" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 hidden">
+                        <a href="setup.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Setup</a>
+                        <a href="commands.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Commands</a>
+                        <a href="keywords.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Keywords</a>
+                        <a href="joins.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">JOINs</a>
+                        <a href="advanced.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Advanced</a>
+                        <a href="interview.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Interview Prep</a>
+                        <a href="ai.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">AI Assistant</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content container -->
+    <div class="max-w-4xl mx-auto pt-10">
+        <section id="foundations">
+            <div class="text-center mb-10">
+                <!-- Adjusted heading size for a more minimal look -->
+                <h2 class="text-2xl md:text-3xl font-bold font-heading text-slate-800">Database Foundations</h2>
+                <p class="max-w-3xl mx-auto text-slate-500 mt-3 text-base">A proficient SQL practitioner understands the "why" before the "how". This section breaks down the foundational concepts of relational databases.</p>
+            </div>
+            <div class="space-y-8">
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <p class="text-base"><strong>SQL (Structured Query Language)</strong> is the standard language for managing and manipulating relational databases. To build a solid foundation, you should master the following core concepts, starting from the basic building blocks and moving toward more complex operations.</p>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">The Four Sub-Languages of SQL</h3>
+                    <p class="text-base mb-4">SQL commands are often categorized into four main groups. Understanding this division helps clarify the purpose of each command.</p>
+                    <div class="grid md:grid-cols-2 gap-6 text-sm">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 class="font-bold text-blue-800">DDL (Data Definition Language)</h4>
+                             <!-- Adjusted text size for better readability -->
+                            <p class="text-sm mt-1 text-blue-700">Defines and manages the database structure (the blueprint).</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><strong>CREATE:</strong> To make a new database, table, or view.</li>
+                                <li><strong>ALTER:</strong> To modify the structure of an existing table.</li>
+                                <li><strong>DROP:</strong> To permanently delete a database, table, or view.</li>
+                                <li><strong>TRUNCATE:</strong> To quickly remove all rows from a table.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-bold text-green-800">DML (Data Manipulation Language) ✍️</h4>
+                            <!-- Adjusted text size for better readability -->
+                            <p class="text-sm mt-1 text-green-700">Used to interact with the data within the tables.</p>
+                             <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><strong>SELECT:</strong> To retrieve data from one or more tables.</li>
+                                <li><strong>INSERT:</strong> To add new rows of data into a table.</li>
+                                <li><strong>UPDATE:</strong> To modify existing rows in a table.</li>
+                                <li><strong>DELETE:</strong> To remove specific rows from a table.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h4 class="font-bold text-yellow-800">DCL (Data Control Language)</h4>
+                            <!-- Adjusted text size for better readability -->
+                            <p class="text-sm mt-1 text-yellow-700">Manages user permissions and access rights.</p>
+                             <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><strong>GRANT:</strong> To give specific permissions to a database user.</li>
+                                <li><strong>REVOKE:</strong> To take away permissions from a user.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h4 class="font-bold text-purple-800">TCL (Transaction Control Language)</h4>
+                            <!-- Adjusted text size for better readability -->
+                            <p class="text-sm mt-1 text-purple-700">Manages transactions (sequences of operations).</p>
+                             <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><strong>COMMIT:</strong> To save all changes made in a transaction.</li>
+                                <li><strong>ROLLBACK:</strong> To undo all changes made in a transaction.</li>
+                                <li><strong>SAVEPOINT:</strong> To set a point within a transaction to roll back to.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">The SELECT Statement: The Heart of SQL</h3>
+                    <p class="text-base mb-4">The <code>SELECT</code> statement is the most important and widely used command for retrieving data. A complete query follows a specific logical order of operations.</p>
+                    <ul class="list-decimal list-inside space-y-2 text-base mb-4">
+                        <li><strong>SELECT:</strong> Specifies the columns you want to retrieve. Use <code>*</code> to select all columns.</li>
+                        <li><strong>FROM:</strong> Specifies the table you are querying from.</li>
+                        <li><strong>WHERE:</strong> Filters rows based on specific conditions.</li>
+                        <li><strong>GROUP BY:</strong> Aggregates rows into summary rows.</li>
+                        <li><strong>HAVING:</strong> Filters groups created by the <code>GROUP BY</code> clause.</li>
+                        <li><strong>ORDER BY:</strong> Sorts the final result set.</li>
+                        <li><strong>LIMIT / TOP:</strong> Restricts the number of rows returned.</li>
+                    </ul>
+                    <h4 class="font-semibold text-slate-600 mb-2">Example Query Structure:</h4>
+                    <div class="bg-slate-800 text-white rounded-lg p-4 overflow-x-auto">
+                        <pre><code class="font-mono text-sm">SELECT column1, column2
+FROM table_name
+WHERE condition
+GROUP BY column1
+HAVING condition_on_group
+ORDER BY column2 DESC
+LIMIT 10;</code></pre>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">Constraints & Data Types</h3>
+                    <p class="text-base mb-4">These rules ensure the integrity and reliability of the data in your database.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-slate-600 mb-2">Common Data Types</h4>
+                             <ul class="list-disc list-inside text-base space-y-1">
+                                <li><strong>Text:</strong> <code>VARCHAR</code>, <code>TEXT</code>, <code>CHAR</code></li>
+                                <li><strong>Numeric:</strong> <code>INT</code>, <code>FLOAT</code>, <code>DECIMAL</code></li>
+                                <li><strong>Date/Time:</strong> <code>DATE</code>, <code>TIME</code>, <code>TIMESTAMP</code></li>
+                                <li><strong>Boolean:</strong> <code>BOOLEAN</code></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-600 mb-2">Constraints</h4>
+                             <ul class="list-disc list-inside text-base space-y-1">
+                                <li><strong>PRIMARY KEY:</strong> Uniquely identifies each record in a table.</li>
+                                <li><strong>FOREIGN KEY:</strong> Links two tables together.</li>
+                                <li><strong>UNIQUE:</strong> Ensures all values in a column are different.</li>
+                                <li><strong>NOT NULL:</strong> Ensures that a column cannot have a NULL value.</li>
+                                <li><strong>DEFAULT:</strong> Provides a default value for a column.</li>
+                                <li><strong>CHECK:</strong> Ensures values in a column satisfy a specific condition.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">JOINs: Combining Data from Multiple Tables 🤝</h3>
+                    <p class="text-base mb-4"><code>JOIN</code> clauses are used to combine rows from two or more tables based on a related column between them. This is a fundamental concept in relational databases.</p>
+                    <ul class="list-disc list-inside space-y-2 text-base">
+                        <li><strong>INNER JOIN:</strong> Returns records that have matching values in both tables.</li>
+                        <li><strong>LEFT JOIN:</strong> Returns all records from the left table, and the matched records from the right table.</li>
+                        <li><strong>RIGHT JOIN:</strong> Returns all records from the right table, and the matched records from the left table.</li>
+                        <li><strong>FULL OUTER JOIN:</strong> Returns all records when there is a match in either the left or right table.</li>
+                    </ul>
+                </div>
+                
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">Important Functions & Operators</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-slate-600 mb-2">Aggregate Functions</h4>
+                            <p class="text-base mb-2">Perform a calculation on a set of values and return a single value.</p>
+                            <ul class="list-disc list-inside text-base space-y-1">
+                                <li><strong>COUNT():</strong> Counts the number of rows.</li>
+                                <li><strong>SUM():</strong> Calculates the sum of values.</li>
+                                <li><strong>AVG():</strong> Calculates the average of values.</li>
+                                <li><strong>MIN() / MAX():</strong> Returns the smallest/largest value.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-600 mb-2">Set Operators</h4>
+                            <p class="text-base mb-2">Combine the result sets of two or more <code>SELECT</code> statements.</p>
+                            <ul class="list-disc list-inside text-base space-y-1">
+                                <li><strong>UNION:</strong> Combines two result sets and removes duplicate rows.</li>
+                                <li><strong>UNION ALL:</strong> Combines two result sets but includes all duplicate rows.</li>
+                                <li><strong>INTERSECT:</strong> Returns only the rows that appear in both result sets.</li>
+                                <li><strong>EXCEPT:</strong> Returns rows from the first query that are not present in the second.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">Advanced Foundational Concepts 🏛️</h3>
+                    <p class="text-base mb-4">Once you are comfortable with the above, these concepts are the next step to a solid foundation.</p>
+                    <ul class="list-disc list-inside space-y-3 text-base">
+                        <li><strong>Subqueries (Nested Queries):</strong> A query placed inside another query. They can be used in <code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, or <code>HAVING</code> clauses to perform complex filtering and data retrieval.</li>
+                        <li><strong>Common Table Expressions (CTEs):</strong> A temporary, named result set that you can reference within a statement. CTEs, defined using the <code>WITH</code> clause, improve readability of complex queries.</li>
+                        <li><strong>Views:</strong> A virtual table based on the result-set of an SQL statement. A view can be used to simplify complex queries, provide a layer of security, and present data differently.</li>
+                        <li><strong>Indexes:</strong> Special lookup tables that the database can use to speed up data retrieval. Creating an index on a column can significantly improve the performance of queries.</li>
+                        <li><strong>Database Normalization:</strong> The process of organizing columns and tables to minimize data redundancy. The most common forms are First Normal Form (1NF), Second Normal Form (2NF), and Third Normal Form (3NF).</li>
+                    </ul>
+                </div>
+                
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">SQL vs. NoSQL: A Deeper Look</h3>
+                    <p class="text-base mb-4">The core difference is <strong>structure</strong>. Relational databases organize data into rigid, predefined tables like spreadsheets, while non-relational databases use flexible models to store varied data types, like files in a folder. SQL is the universal language used to communicate specifically with relational databases.</p>
+                    
+                    <div class="text-center my-6">
+                        <svg class="w-full max-w-2xl mx-auto" viewBox="0 0 400 150">
+                            <!-- SVG content remains the same -->
+                            <text x="75" y="15" font-family="Lexend" font-size="10" text-anchor="middle" fill="#1e293b">Relational (SQL)</text>
+                            <rect x="25" y="25" width="100" height="100" rx="5" fill="#fff" stroke="#94a3b8"></rect>
+                            <line x1="25" y1="45" x2="125" y2="45" stroke="#cbd5e1"></line>
+                            <line x1="75" y1="25" x2="75" y2="125" stroke="#cbd5e1"></line>
+                            <text x="50" y="38" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">ID</text>
+                            <text x="100" y="38" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">Name</text>
+                            <text x="50" y="60" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">1</text>
+                            <text x="100" y="60" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">Alice</text>
+                            <text x="50" y="80" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">2</text>
+                            <text x="100" y="80" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">Bob</text>
+                            <text x="75" y="140" font-family="Plus Jakarta Sans" font-size="8" text-anchor="middle" fill="#64748b">📇 Rigid Schema</text>
+                            <text x="325" y="15" font-family="Lexend" font-size="10" text-anchor="middle" fill="#1e293b">Non-Relational (NoSQL)</text>
+                            <rect x="275" y="25" width="100" height="40" rx="3" fill="#fff" stroke="#94a3b8"></rect>
+                            <text x="325" y="45" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">{ name: "Eve", age: 28 }</text>
+                            <rect x="265" y="75" width="120" height="50" rx="3" fill="#fff" stroke="#94a3b8"></rect>
+                            <text x="325" y="95" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">{ name: "Frank",</text>
+                            <text x="325" y="105" font-family="Plus Jakarta Sans" font-size="7" text-anchor="middle" fill="#475569">  hobbies: ["ski", "read"] }</text>
+                            <text x="325" y="140" font-family="Plus Jakarta Sans" font-size="8" text-anchor="middle" fill="#64748b">📁 Flexible Schema</text>
+                        </svg>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <h4 class="font-semibold text-slate-600 mb-2">Relational Databases (SQL)</h4>
+                            <p class="text-base">Relational databases store data in a highly structured way, using tables composed of rows and columns.</p>
+                            <ul class="list-disc list-inside text-base space-y-1 mt-2">
+                                <li><strong>Schema:</strong> The structure is defined by a fixed schema before you add any data.</li>
+                                <li><strong>Relationships:</strong> Data in different tables is linked together using keys.</li>
+                                <li><strong>Consistency:</strong> Designed for reliability and consistency (ACID compliance).</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-600 mb-2">Non-Relational Databases (NoSQL)</h4>
+                            <p class="text-base">Non-relational databases are built for flexibility and scale, storing unstructured or semi-structured data.</p>
+                            <ul class="list-disc list-inside text-base space-y-1 mt-2">
+                                <li><strong>Schema:</strong> They have a dynamic schema, meaning you can add data without a predefined structure.</li>
+                                <li><strong>Data Models:</strong> Several types exist, including Document, Key-Value, and Graph.</li>
+                                <li><strong>Scalability:</strong> Designed to scale out horizontally (adding more servers).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card bg-white p-6 rounded-lg">
+                    <!-- Adjusted heading size -->
+                    <h3 class="text-xl font-bold font-heading text-slate-700 mb-3">Key Differences at a Glance</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-base text-left">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="p-3 font-semibold">Feature</th>
+                                    <th class="p-3 font-semibold">Relational Database (SQL)</th>
+                                    <th class="p-3 font-semibold">Non-Relational Database (NoSQL)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Data Model</td>
+                                    <td class="p-3">Tables with rows and columns</td>
+                                    <td class="p-3">Documents, key-value pairs, graphs, etc.</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Schema</td>
+                                    <td class="p-3">Rigid and predefined</td>
+                                    <td class="p-3">Flexible and dynamic</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Scalability</td>
+                                    <td class="p-3">Vertically (increase power of one server)</td>
+                                    <td class="p-3">Horizontally (add more servers)</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Language</td>
+                                    <td class="p-3">SQL</td>
+                                    <td class="p-3">Varies by database</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Best For</td>
+                                    <td class="p-3">Transactions, complex queries, data integrity</td>
+                                    <td class="p-3">Big data, unstructured data, high scalability</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownButton = document.getElementById('dropdown-button');
+            const dropdownContent = document.getElementById('dropdown-content');
+
+            dropdownButton.addEventListener('click', () => {
+                dropdownContent.classList.toggle('hidden');
+            });
+
+            // Close dropdown if clicking outside
+            document.addEventListener('click', (event) => {
+                const dropdownMenu = document.getElementById('dropdown-menu');
+                if (!dropdownMenu.contains(event.target)) {
+                    dropdownContent.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
