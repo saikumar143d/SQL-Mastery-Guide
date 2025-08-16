@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Command Simulator - SQL Mastery Guide</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cellipse cx='12' cy='5' rx='9' ry='3'%3e%3c/ellipse%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'%3e%3c/path%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'%3e%3c/path%3e%3c/svg%3e">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans for body, Lexend for headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        :root {
+            --theme-red: #ef4444; /* red-500 */
+            --theme-pale-green: #f0fdf4; /* green-50 */
+            --theme-dark: #1e293b; /* slate-800 */
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .font-heading {
+            font-family: 'Lexend', sans-serif;
+            color: var(--theme-dark);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        code:not(pre code) {
+            background-color: #fee2e2; /* red-100 */
+            color: #b91c1c; /* red-700 */
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .category-btn.active {
+            background-color: var(--theme-red);
+            color: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+        .category-btn {
+             background-color: #e2e8f0;
+             color: #475569;
+             transition: background-color 0.2s, color 0.2s;
+        }
+        .category-btn:hover:not(.active) {
+            background-color: #cbd5e1;
+        }
+        .command-btn.active {
+            background-color: var(--theme-dark);
+            color: white;
+        }
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Simple fade-in animation for result */
+        @keyframes fadeInResult {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeInResult 0.4s ease-out forwards;
+        }
+        /* Beautified Sample and Output Data Tables */
+        .sample-table, .output-table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+        }
+        .sample-table th, .output-table th {
+            background-color: var(--theme-dark);
+            color: white;
+            padding: 0.5rem;
+            font-weight: 600;
+        }
+        .sample-table td, .output-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .sample-table tbody tr:nth-child(even), .output-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .sample-table th:first-child, .output-table th:first-child { border-top-left-radius: 0.375rem; }
+        .sample-table th:last-child, .output-table th:last-child { border-top-right-radius: 0.375rem; }
+    </style>
+</head>
+<body class="p-4 sm:p-6 pt-16">
+    <!-- Header Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg fixed top-0 left-0 right-0 z-10 border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14">
+                <a href="index.html" class="flex items-center gap-2 text-slate-800 hover:text-red-500 transition-colors">
+                    <span class="material-symbols-outlined" style="color: var(--theme-red);">database</span>
+                    <span class="font-bold font-heading text-lg">SQL Guide</span>
+                </a>
+                <div class="relative" id="dropdown-menu">
+                    <button id="dropdown-button" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-md text-sm font-semibold text-slate-700 transition-colors">
+                        Navigate
+                        <span class="material-symbols-outlined text-base">expand_more</span>
+                    </button>
+                    <div id="dropdown-content" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 hidden">
+                        <a href="foundations.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Foundations</a>
+                        <a href="setup.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Setup</a>
+                        <a href="keywords.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Keywords</a>
+                        <a href="joins.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">JOINs</a>
+                        <a href="advanced.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Advanced</a>
+                        <a href="interview.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Interview Prep</a>
+                        <a href="ai.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">AI Assistant</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto pt-8">
+        <section id="commands" class="tab-panel fade-in">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-bold font-heading text-slate-800">Core Command Simulator</h2>
+                <p class="max-w-3xl mx-auto text-slate-500 mt-3 text-sm md:text-base">Explore the building blocks of SQL with this interactive simulator. Select a command, review the example, run it, and even get an AI-powered explanation of the code.</p>
+            </div>
+
+            <!-- Sample Data Tables -->
+            <details class="max-w-4xl mx-auto bg-white rounded-lg shadow border border-slate-200 mb-8 overflow-hidden">
+                <summary class="p-3 font-semibold font-heading cursor-pointer flex items-center justify-between">
+                    <span>View Sample Data Tables</span>
+                    <span class="material-symbols-outlined">table_chart</span>
+                </summary>
+                <div class="p-4 border-t bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                    <div>
+                        <h4 class="font-bold mb-2 text-slate-700 text-sm">`employees`</h4>
+                        <table class="sample-table">
+                            <thead><tr><th>id</th><th>first_name</th><th>last_name</th><th>salary</th><th>dept_id</th></tr></thead>
+                            <tbody>
+                                <tr><td>101</td><td>John</td><td>Doe</td><td>55000</td><td>1</td></tr>
+                                <tr><td>102</td><td>Jane</td><td>Smith</td><td>62000</td><td>2</td></tr>
+                                <tr><td>103</td><td>Peter</td><td>Jones</td><td>71000</td><td>1</td></tr>
+                                <tr><td>104</td><td>Jennifer</td><td>Lee</td><td>48000</td><td>3</td></tr>
+                                <tr><td>105</td><td>Michael</td><td>Brown</td><td>80000</td><td>4</td></tr>
+                                <tr><td>106</td><td>Sarah</td><td>Davis</td><td>95000</td><td>4</td></tr>
+                                <tr><td>107</td><td>Chris</td><td>Miller</td><td>51000</td><td>2</td></tr>
+                                <tr><td>108</td><td>Jessica</td><td>Wilson</td><td>68000</td><td>1</td></tr>
+                                <tr><td>109</td><td>David</td><td>Moore</td><td>45000</td><td>3</td></tr>
+                                <tr><td>110</td><td>Emily</td><td>Taylor</td><td>110000</td><td>5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-2 text-slate-700 text-sm">`departments`</h4>
+                        <table class="sample-table">
+                            <thead><tr><th>id</th><th>name</th></tr></thead>
+                            <tbody>
+                                <tr><td>1</td><td>Sales</td></tr>
+                                <tr><td>2</td><td>Marketing</td></tr>
+                                <tr><td>3</td><td>HR</td></tr>
+                                <tr><td>4</td><td>Engineering</td></tr>
+                                <tr><td>5</td><td>Finance</td></tr>
+                                <tr><td>6</td><td>IT</td></tr>
+                                <tr><td>7</td><td>Operations</td></tr>
+                                <tr><td>8</td><td>Legal</td></tr>
+                                <tr><td>9</td><td>Research</td></tr>
+                                <tr><td>10</td><td>Support</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </details>
+
+            <div class="w-full max-w-6xl mx-auto bg-white rounded-xl shadow-lg border border-slate-200">
+                <div class="p-3 border-b border-slate-200 flex flex-wrap justify-center gap-2 bg-slate-50/50 rounded-t-xl">
+                    <button class="category-btn px-3 py-1.5 text-sm font-semibold rounded-md active" data-category="dql">DQL (Queries)</button>
+                    <button class="category-btn px-3 py-1.5 text-sm font-semibold rounded-md" data-category="dml">DML (Manipulation)</button>
+                    <button class="category-btn px-3 py-1.5 text-sm font-semibold rounded-md" data-category="ddl">DDL (Definition)</button>
+                </div>
+                <div id="command-buttons-container" class="p-3 border-b border-slate-200 flex flex-wrap justify-center gap-2"></div>
+                <div id="command-simulator" class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <!-- Dynamic Content Area -->
+                    <div id="command-info">
+                        <h3 id="command-title" class="text-xl font-bold font-heading text-slate-800 mb-2"></h3>
+                        <p id="command-description" class="text-slate-600 mb-4 text-sm"></p>
+                        <div class="bg-slate-800 text-white rounded-lg p-4 mb-4 relative">
+                            <pre><code id="current-query" class="font-mono text-sm"></code></pre>
+                            <button id="copy-btn" class="copy-btn absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs px-2 py-1 rounded flex items-center gap-1"><span class="material-symbols-outlined text-sm">content_copy</span>Copy</button>
+                        </div>
+                        <div id="command-tip" class="bg-green-50 border-l-4 border-green-400 text-green-800 p-4 rounded-r-lg text-sm"></div>
+                    </div>
+                    <div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                            <button id="run-query-btn" class="w-full bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600 transition-colors shadow flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">play_circle</span>Run Query
+                            </button>
+                            <button id="explain-query-btn" class="w-full bg-slate-600 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-700 transition-colors shadow flex items-center justify-center disabled:opacity-70 disabled:cursor-wait">
+                               <span class="btn-text flex items-center gap-2"><span class="material-symbols-outlined">auto_awesome</span>Explain Query</span>
+                               <div class="spinner hidden ml-2"></div>
+                            </button>
+                             <button id="suggest-challenge-btn" class="sm:col-span-2 w-full bg-slate-800 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-900 transition-colors shadow flex items-center justify-center disabled:opacity-70 disabled:cursor-wait">
+                               <span class="btn-text flex items-center gap-2"><span class="material-symbols-outlined">lightbulb</span>Suggest a Challenge ✨</span>
+                               <div class="spinner hidden ml-2"></div>
+                            </button>
+                        </div>
+                        <div id="output-container" class="bg-white p-4 rounded-lg border border-slate-200 min-h-[200px] overflow-auto text-sm">
+                            <p class="text-slate-400">Click "Run Query" to see simulated output or use the ✨ AI features!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const commands = {
+                dql: [
+                    { id: 'select', name: 'SELECT...WHERE', desc: 'Retrieves data from a table, filtered by a specific condition.', query: "SELECT first_name, last_name, salary\nFROM employees\nWHERE salary > 60000;", tip: 'Use `WHERE` to narrow down results and improve query performance.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th><th>salary</th></tr></thead><tbody><tr><td>Jane</td><td>Smith</td><td>62000</td></tr><tr><td>Peter</td><td>Jones</td><td>71000</td></tr><tr><td>Michael</td><td>Brown</td><td>80000</td></tr><tr><td>Sarah</td><td>Davis</td><td>95000</td></tr><tr><td>Jessica</td><td>Wilson</td><td>68000</td></tr><tr><td>Emily</td><td>Taylor</td><td>110000</td></tr></tbody></table></div>` },
+                    { id: 'join', name: 'JOIN', desc: 'Combines rows from two or more tables based on a related column.', query: "SELECT e.first_name, d.name\nFROM employees e\nJOIN departments d ON e.dept_id = d.id;", tip: '`JOIN` (or `INNER JOIN`) is one of the most powerful features of SQL for relational data.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>name</th></tr></thead><tbody><tr><td>John</td><td>Sales</td></tr><tr><td>Jane</td><td>Marketing</td></tr><tr><td>Peter</td><td>Sales</td></tr><tr><td>Jennifer</td><td>HR</td></tr><tr><td>Michael</td><td>Engineering</td></tr><tr><td>Sarah</td><td>Engineering</td></tr><tr><td>Chris</td><td>Marketing</td></tr><tr><td>Jessica</td><td>Sales</td></tr><tr><td>David</td><td>HR</td></tr><tr><td>Emily</td><td>Finance</td></tr></tbody></table></div>` },
+                    { id: 'like', name: 'LIKE', desc: 'Searches for a specified pattern in a column.', query: "SELECT first_name, last_name\nFROM employees\nWHERE first_name LIKE 'J%';", tip: 'The percent sign `%` is a wildcard that matches any sequence of characters.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th></tr></thead><tbody><tr><td>John</td><td>Doe</td></tr><tr><td>Jane</td><td>Smith</td></tr><tr><td>Jennifer</td><td>Lee</td></tr><tr><td>Jessica</td><td>Wilson</td></tr></tbody></table></div>` },
+                    { id: 'in', name: 'IN', desc: 'Specifies multiple values in a WHERE clause.', query: "SELECT first_name, last_name\nFROM employees\nWHERE dept_id IN (2, 3);", tip: '`IN` is a shorthand for multiple `OR` conditions.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th></tr></thead><tbody><tr><td>Jane</td><td>Smith</td></tr><tr><td>Jennifer</td><td>Lee</td></tr><tr><td>Chris</td><td>Miller</td></tr><tr><td>David</td><td>Moore</td></tr></tbody></table></div>` },
+                    { id: 'between', name: 'BETWEEN', desc: 'Selects values within a given range. The values can be numbers, text, or dates.', query: "SELECT first_name, salary\nFROM employees\nWHERE salary BETWEEN 50000 AND 65000;", tip: 'The `BETWEEN` operator is inclusive: begin and end values are included.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>salary</th></tr></thead><tbody><tr><td>John</td><td>55000</td></tr><tr><td>Jane</td><td>62000</td></tr><tr><td>Chris</td><td>51000</td></tr></tbody></table></div>` },
+                    { id: 'groupby', name: 'GROUP BY...HAVING', desc: 'Groups rows that have the same values into summary rows and filters these groups.', query: 'SELECT d.name, COUNT(e.id) as num_employees\nFROM employees e\nJOIN departments d ON e.dept_id = d.id\nGROUP BY d.name\nHAVING COUNT(e.id) > 1;', tip: '`WHERE` filters rows before grouping, `HAVING` filters groups after grouping.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>name</th><th>num_employees</th></tr></thead><tbody><tr><td>Sales</td><td>3</td></tr><tr><td>Marketing</td><td>2</td></tr><tr><td>HR</td><td>2</td></tr><tr><td>Engineering</td><td>2</td></tr></tbody></table></div>` },
+                    { id: 'case', name: 'CASE', desc: 'Goes through conditions and returns a value when the first condition is met.', query: "SELECT first_name, salary,\n  CASE\n    WHEN salary > 70000 THEN 'High Earner'\n    WHEN salary > 50000 THEN 'Mid Earner'\n    ELSE 'Standard Earner'\n  END as salary_level\nFROM employees;", tip: 'A `CASE` statement is like an IF-THEN-ELSE statement in other languages.', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>salary</th><th>salary_level</th></tr></thead><tbody><tr><td>John</td><td>55000</td><td>Mid Earner</td></tr><tr><td>Jane</td><td>62000</td><td>Mid Earner</td></tr><tr><td>Peter</td><td>71000</td><td>High Earner</td></tr><tr><td>Jennifer</td><td>48000</td><td>Standard Earner</td></tr><tr><td>Michael</td><td>80000</td><td>High Earner</td></tr><tr><td>Sarah</td><td>95000</td><td>High Earner</td></tr><tr><td>Chris</td><td>51000</td><td>Mid Earner</td></tr><tr><td>Jessica</td><td>68000</td><td>Mid Earner</td></tr><tr><td>David</td><td>45000</td><td>Standard Earner</td></tr><tr><td>Emily</td><td>110000</td><td>High Earner</td></tr></tbody></table></div>` },
+                    { id: 'limitoffset', name: 'LIMIT...OFFSET', desc: 'Restricts the number of rows returned and specifies a starting point.', query: "SELECT first_name, last_name, salary\nFROM employees\nORDER BY id\nLIMIT 2 OFFSET 2;", tip: '`LIMIT` sets the max rows to return. `OFFSET` skips a number of rows before starting. Great for pagination!', output: `<div class="animate-fade-in"><table class="output-table"><thead><tr><th>first_name</th><th>last_name</th><th>salary</th></tr></thead><tbody><tr><td>Peter</td><td>Jones</td><td>71000</td></tr><tr><td>Jennifer</td><td>Lee</td><td>48000</td></tr></tbody></table></div>` },
+                ],
+                dml: [
+                    { id: 'insert', name: 'INSERT INTO', desc: 'Adds a new row of data to a table.', query: "INSERT INTO departments (id, name)\nVALUES (11, 'Quality Assurance');", tip: 'Ensure the number of values matches the number of columns specified.', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>' },
+                    { id: 'update', name: 'UPDATE', desc: 'Modifies existing records in a table.', query: "UPDATE employees\nSET salary = 50000\nWHERE id = 104;", tip: 'Always use a `WHERE` clause with `UPDATE` unless you intend to change all rows!', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>' },
+                    { id: 'delete', name: 'DELETE', desc: 'Removes one or more rows from a table.', query: 'DELETE FROM employees\nWHERE id = 104;', tip: '`DELETE` removes rows, `TRUNCATE` removes all rows (faster), `DROP` removes the table itself.', output: '<p class="animate-fade-in text-green-600 font-medium">1 row(s) affected.</p>' },
+                ],
+                ddl: [
+                    { id: 'create', name: 'CREATE TABLE', desc: 'Creates a new table in the database.', query: 'CREATE TABLE projects (\n    id INT PRIMARY KEY,\n    name VARCHAR(100) NOT NULL,\n    start_date DATE\n);', tip: 'Define data types and constraints for each column to ensure data integrity.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" created successfully.</p>' },
+                    { id: 'alter', name: 'ALTER TABLE', desc: 'Modifies the structure of an existing table.', query: 'ALTER TABLE projects\nADD COLUMN budget DECIMAL(10, 2);', tip: 'You can use `ALTER TABLE` to add, drop, or modify columns, constraints, and indexes.', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" altered successfully.</p>' },
+                    { id: 'drop', name: 'DROP TABLE', desc: 'Permanently deletes a table and all its data.', query: 'DROP TABLE projects;', tip: 'This action is irreversible. Use with extreme caution!', output: '<p class="animate-fade-in text-green-600 font-medium">Table "projects" dropped successfully.</p>' },
+                ]
+            };
+
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const commandButtonsContainer = document.getElementById('command-buttons-container');
+            const commandTitle = document.getElementById('command-title');
+            const commandDesc = document.getElementById('command-description');
+            const currentQuery = document.getElementById('current-query');
+            const commandTip = document.getElementById('command-tip');
+            const outputContainer = document.getElementById('output-container');
+            const runQueryBtn = document.getElementById('run-query-btn');
+            const explainQueryBtn = document.getElementById('explain-query-btn');
+            const suggestChallengeBtn = document.getElementById('suggest-challenge-btn');
+            const copyBtn = document.getElementById('copy-btn');
+
+            let activeCategory = 'dql';
+            let activeCommandId = 'select';
+
+            function renderCommandButtons() {
+                commandButtonsContainer.innerHTML = '';
+                commands[activeCategory].forEach(cmd => {
+                    const button = document.createElement('button');
+                    button.className = `command-btn px-3 py-1.5 text-sm font-medium rounded-md bg-slate-100 text-slate-700 transition-colors hover:bg-slate-200 ${cmd.id === activeCommandId ? 'active' : ''}`;
+                    button.dataset.command = cmd.id;
+                    button.textContent = cmd.name;
+                    button.addEventListener('click', () => {
+                        activeCommandId = cmd.id;
+                        renderCommandButtons();
+                        updateSimulator();
+                    });
+                    commandButtonsContainer.appendChild(button);
+                });
+            }
+
+            function updateSimulator() {
+                const command = commands[activeCategory].find(c => c.id === activeCommandId);
+                if (command) {
+                    commandTitle.textContent = command.name;
+                    commandDesc.textContent = command.desc;
+                    currentQuery.textContent = command.query;
+                    commandTip.innerHTML = `<p><strong>Tip:</strong> ${command.tip}</p>`;
+                    outputContainer.innerHTML = '<p class="text-slate-400">Click "Run Query" to see simulated output or use the ✨ AI features!</p>';
+                }
+            }
+
+            function handleRunQuery() {
+                const command = commands[activeCategory].find(c => c.id === activeCommandId);
+                if (command) {
+                    outputContainer.innerHTML = command.output;
+                }
+            }
+            
+            async function callGemini(prompt, button, retries = 3, delay = 1000) {
+                const spinner = button.querySelector('.spinner');
+                const btnText = button.querySelector('.btn-text');
+                const originalText = btnText.innerHTML;
+
+                button.disabled = true;
+                spinner.classList.remove('hidden');
+                btnText.textContent = 'Thinking...';
+                outputContainer.innerHTML = '<div class="flex items-center justify-center h-full"><div class="spinner !border-slate-300 !border-t-slate-600"></div></div>';
+
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 429 && retries > 0) {
+                            await new Promise(res => setTimeout(res, delay));
+                            return callGemini(prompt, button, retries - 1, delay * 2); 
+                        }
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("Invalid response structure from API.");
+                    }
+                } catch (error) {
+                    console.error("Gemini API call failed:", error);
+                    return `<p class="text-red-500">Sorry, there was an error getting a response. Please try again.</p>`;
+                } finally {
+                    button.disabled = false;
+                    spinner.classList.add('hidden');
+                    btnText.innerHTML = originalText;
+                }
+            }
+            
+            async function handleExplainQuery() {
+                const command = commands[activeCategory].find(c => c.id === activeCommandId);
+                if (!command) return;
+
+                const prompt = `Explain the following SQL query in simple, beginner-friendly terms. Break down what each line does. Format your response as a JSON object with a "title" (string) and "steps" (an array of objects, where each object has a "clause" and "description"). Do not use any markdown formatting. The query is: \n\n${command.query}`;
+                let responseText = await callGemini(prompt, explainQueryBtn);
+                
+                try {
+                     if (responseText.startsWith("```json")) {
+                        responseText = responseText.substring(7, responseText.length - 3).trim();
+                    } else if (responseText.startsWith("```")) {
+                         responseText = responseText.substring(3, responseText.length - 3).trim();
+                    }
+                    const jsonResponse = JSON.parse(responseText);
+                    
+                    let html = `<div class="p-2 bg-slate-50 rounded-md text-xs space-y-3">
+                                    <h4 class="font-bold text-sm text-slate-800">${jsonResponse.title}</h4>`;
+                    
+                    jsonResponse.steps.forEach(step => {
+                        html += `
+                            <div class="flex items-start gap-2">
+                                <span class="material-symbols-outlined text-red-500 text-base mt-0.5">arrow_right_alt</span>
+                                <div>
+                                    <p class="font-semibold text-slate-700">${step.clause}</p>
+                                    <p class="text-slate-600">${step.description}</p>
+                                </div>
+                            </div>`;
+                    });
+
+                    html += `</div>`;
+                    outputContainer.innerHTML = html;
+
+                } catch (e) {
+                     console.error("Failed to parse JSON for explanation:", e, "Raw response:", responseText);
+                     outputContainer.innerHTML = `<p class="text-red-500">Sorry, there was an error formatting the explanation. Please try again.</p>`;
+                }
+            }
+            
+            async function handleSuggestChallenge() {
+                const command = commands[activeCategory].find(c => c.id === activeCommandId);
+                if (!command) return;
+
+                const prompt = `Based on the provided sample tables ('employees' with columns id, first_name, last_name, salary, dept_id and 'departments' with columns id, name), create a simple SQL practice problem that requires using a ${command.name}. The problem should be a short question. Then, provide the SQL query that solves it. Format the response as a JSON object with two keys: "problem" and "solution". Do not wrap the JSON in markdown backticks.`;
+                let responseText = await callGemini(prompt, suggestChallengeBtn);
+
+                try {
+                    // Clean the response text to remove markdown code block delimiters
+                    if (responseText.startsWith("```json")) {
+                        responseText = responseText.substring(7, responseText.length - 3).trim();
+                    } else if (responseText.startsWith("```")) {
+                         responseText = responseText.substring(3, responseText.length - 3).trim();
+                    }
+
+                    const jsonResponse = JSON.parse(responseText);
+                    outputContainer.innerHTML = `
+                        <div class="p-2 bg-slate-50 rounded-md text-xs space-y-3">
+                            <p class="font-semibold">Challenge:</p>
+                            <p>${jsonResponse.problem}</p>
+                            <details class="mt-2">
+                                <summary class="cursor-pointer text-red-600 font-medium">Show Solution</summary>
+                                <div class="mt-2 p-2 bg-slate-800 text-white rounded">
+                                    <pre><code>${jsonResponse.solution}</code></pre>
+                                </div>
+                            </details>
+                        </div>`;
+                } catch (e) {
+                    console.error("Failed to parse JSON from Gemini:", e, "Raw response:", responseText);
+                    outputContainer.innerHTML = `<p class="text-red-500">Sorry, there was an error generating the challenge. Please try again.</p>`;
+                }
+            }
+
+
+            function handleCopy() {
+                const textToCopy = currentQuery.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyBtn.innerHTML = `<span class="material-symbols-outlined text-sm">check</span>Copied!`;
+                    setTimeout(() => { 
+                        copyBtn.innerHTML = `<span class="material-symbols-outlined text-sm">content_copy</span>Copy`;
+                    }, 2000);
+                }).catch(err => console.error('Failed to copy: ', err));
+            }
+
+            // --- EVENT LISTENERS ---
+            const dropdownButton = document.getElementById('dropdown-button');
+            const dropdownContent = document.getElementById('dropdown-content');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownContent.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (dropdownMenu && !dropdownMenu.contains(event.target)) {
+                    dropdownContent.classList.add('hidden');
+                }
+            });
+
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    categoryButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeCategory = btn.dataset.category;
+                    activeCommandId = commands[activeCategory][0].id;
+                    renderCommandButtons();
+                    updateSimulator();
+                });
+            });
+
+            runQueryBtn.addEventListener('click', handleRunQuery);
+            explainQueryBtn.addEventListener('click', handleExplainQuery);
+            suggestChallengeBtn.addEventListener('click', handleSuggestChallenge);
+            copyBtn.addEventListener('click', handleCopy);
+
+            renderCommandButtons();
+            updateSimulator();
+        });
+    </script>
+</body>
+</html>
