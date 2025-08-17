@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern SQL Keywords Glossary</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3e%3cdefs%3e%3clinearGradient id='holographic-orange' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3e%3cstop offset='0%25' style='stop-color:%23fb923c;stop-opacity:1' /%3e%3cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3e%3c/linearGradient%3e%3c/defs%3e%3cellipse cx='12' cy='5' rx='9' ry='3' fill='none' stroke='url(%23holographic-orange)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3' fill='none' stroke='url(%23holographic-orange)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5' fill='none' stroke='url(%23holographic-orange)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans for body, Lexend for headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --theme-orange: #f97316;
+            --theme-dark: #1e293b;
+            --theme-light-gray: #f8fafc;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--theme-light-gray);
+            color: #334155;
+            font-size: 14px;
+        }
+        .font-heading { font-family: 'Lexend', sans-serif; color: var(--theme-dark); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        
+        .syntax-block {
+            background-color: #020617;
+            color: #e2e8f0;
+            border-radius: 0.5rem;
+            position: relative;
+            font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+        }
+        .syntax-block .header {
+            background-color: #1e293b;
+            padding: 0.375rem 0.75rem;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .syntax-block .copy-btn {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .syntax-block .copy-btn:hover { background-color: #475569; }
+        .syntax-block pre { padding: 0.75rem; white-space: pre-wrap; word-break: break-all; }
+        .sql-comment { color: #64748b; }
+        .sql-keyword { color: #7dd3fc; }
+        .sql-string { color: #fde047; }
+        .sql-number { color: #c4b5fd; }
+        .sql-operator { color: #fda4af; }
+        .sql-function { color: #a5b4fc; }
+
+        .info-card {
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+        .info-card .icon {
+            border-radius: 9999px;
+            padding: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 1rem;
+        }
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal-content {
+            background-color: white;
+            border-radius: 0.75rem;
+            width: 100%;
+            max-width: 44rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .keyword-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .keyword-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100">
+    <!-- Header Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 left-0 right-0 z-20 border-b border-slate-200">
+        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14">
+                <a href="index.html" class="flex items-center gap-2 text-slate-800 hover:text-orange-500 transition-colors flex-shrink-0">
+                    <span class="material-symbols-outlined" style="color: var(--theme-orange);">database</span>
+                    <span class="font-bold font-heading text-base">SQL Glossary</span>
+                </a>
+                <div class="flex items-center gap-3">
+                     <div class="relative w-full max-w-xs hidden sm:block">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                        <input type="search" id="keyword-search" placeholder="Search keywords..." class="w-full p-1.5 pl-10 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition bg-white shadow-sm">
+                    </div>
+                    <div class="relative" id="dropdown-menu">
+                        <button id="dropdown-button" class="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-md text-sm font-semibold text-slate-700 transition-colors">
+                            Navigate
+                            <span class="material-symbols-outlined text-base">expand_more</span>
+                        </button>
+                        <div id="dropdown-content" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 hidden z-30">
+                            <a href="foundations.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Foundations</a>
+                            <a href="setup.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Setup</a>
+                            <a href="commands.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Commands</a>
+                            <a href="joins.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">JOINs</a>
+                            <a href="advanced.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Advanced</a>
+                            <a href="interview.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Interview Prep</a>
+                            <a href="ai.html" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">AI Assistant</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="keyword-container" class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- Keyword categories will be dynamically inserted here -->
+    </main>
+
+    <!-- Modal -->
+    <div id="keyword-modal" class="modal-overlay">
+        <div id="modal-content" class="modal-content">
+            <!-- Modal content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sqlData = {
+              "DDL": [
+                { "keyword": "CREATE", "category": "DDL", "what": "A command to create new database objects like a database, table, index, or view.", "why": "To establish the foundational structures that will hold and organize your data.", "when": "At the beginning of a project to set up the database and tables, or whenever a new data structure is needed.", "where": "As a standalone statement.", "syntax": "-- Creates a new database\nCREATE DATABASE CompanyDB;\n\n-- Creates a new table to store employee information\nCREATE TABLE Employees (\n    EmployeeID INT PRIMARY KEY,\n    FirstName VARCHAR(50) NOT NULL,\n    Department VARCHAR(50),\n    HireDate DATE\n);\n\n-- Creates an index to speed up searches on the Department column\nCREATE INDEX idx_department ON Employees (Department);" },
+                { "keyword": "ALTER", "category": "DDL", "what": "A command to modify the structure of an existing database object, most commonly a table.", "why": "To evolve your database schema as requirements change, without needing to delete and recreate objects.", "when": "When you need to add, delete, or change a column, or add/remove constraints.", "where": "As a standalone statement.", "syntax": "-- Adds a 'Salary' column to the Employees table\nALTER TABLE Employees\nADD COLUMN Salary DECIMAL(10, 2);\n\n-- Changes the data type of the FirstName column\nALTER TABLE Employees\nMODIFY COLUMN FirstName VARCHAR(75);" },
+                { "keyword": "DROP", "category": "DDL", "what": "A command that permanently deletes a database object.", "why": "To completely remove an object that is no longer needed.", "when": "During database cleanup or when a feature is retired. Use with extreme caution as it's irreversible.", "where": "As a standalone statement.", "syntax": "-- Permanently deletes the 'Employees' table\nDROP TABLE Employees;\n\n-- Permanently deletes the 'CompanyDB' database\nDROP DATABASE CompanyDB;" },
+                { "keyword": "TRUNCATE", "category": "DDL", "what": "A command that quickly removes all rows from a table, but the table structure remains.", "why": "It's much faster than DELETE for emptying an entire table because it deallocates data pages instead of removing rows one by one. It's a minimally logged operation.", "when": "When you need to reset a table for testing or clear a temporary staging table before a new data load.", "where": "As a standalone statement.", "syntax": "-- Removes all data from the 'LogEntries' table instantly\nTRUNCATE TABLE LogEntries;" },
+                { "keyword": "RENAME", "category": "DDL", "what": "A command to change the name of a database object, typically a table.", "why": "To make object names more descriptive, correct a typo, or adhere to new naming conventions.", "when": "During a database refactor or schema update.", "where": "As a standalone statement. (Note: Syntax can vary, e.g., some systems use ALTER TABLE ... RENAME TO ...).", "syntax": "-- Renames the table 'Emps' to 'Employees'\nRENAME TABLE Emps TO Employees;" }
+              ],
+              "DML": [
+                { "keyword": "SELECT", "category": "DML", "what": "Retrieves data from one or more tables.", "why": "To read, query, and analyze the data stored in the database. It is the most common SQL command.", "when": "Anytime you need to fetch information from the database.", "where": "As the starting keyword for any data query.", "syntax": "-- Selects the name and salary of employees in the 'Sales' department\nSELECT FirstName, LastName, Salary\nFROM Employees\nWHERE Department = 'Sales';" },
+                { "keyword": "INSERT", "category": "DML", "what": "Adds new rows of data into a table.", "why": "To populate tables with new records.", "when": "When a new user registers, an order is placed, or any new data needs to be saved.", "where": "As a standalone statement.", "syntax": "-- Inserts a new record into the Employees table\nINSERT INTO Employees (EmployeeID, FirstName, Department, Salary)\nVALUES (101, 'John', 'Sales', 70000);" },
+                { "keyword": "UPDATE", "category": "DML", "what": "Modifies existing rows in a table.", "why": "To change data that is already stored.", "when": "When a user changes their address, a product's price is adjusted, or an order status changes.", "where": "As a standalone statement. The WHERE clause is critical to avoid updating all rows.", "syntax": "-- Updates the salary for employee with ID 101\nUPDATE Employees\nSET Salary = 72000\nWHERE EmployeeID = 101;" },
+                { "keyword": "DELETE", "category": "DML", "what": "Removes one or more rows from a table.", "why": "To permanently remove records from a table.", "when": "When a user cancels an account or a specific record is no longer valid.", "where": "As a standalone statement. The WHERE clause is critical to avoid deleting all rows.", "syntax": "-- Deletes the employee with ID 101\nDELETE FROM Employees\nWHERE EmployeeID = 101;" },
+                { "keyword": "MERGE", "category": "DML", "what": "Performs an INSERT, UPDATE, or DELETE on a target table based on the results of a join with a source table. Also known as an 'UPSERT' (update or insert).", "why": "To efficiently synchronize two tables by updating matching rows and inserting new rows in a single operation.", "when": "When updating a master data table from a staging table that contains new and changed records.", "where": "As a standalone statement.", "syntax": "-- Synchronize the Employees table with updated data from a staging table\nMERGE INTO Employees AS T\nUSING EmployeesUpdates AS S\nON (T.EmployeeID = S.EmployeeID)\nWHEN MATCHED THEN\n    UPDATE SET T.Salary = S.Salary\nWHEN NOT MATCHED THEN\n    INSERT (EmployeeID, FirstName, Salary) VALUES (S.EmployeeID, S.FirstName, S.Salary);" }
+              ],
+              "DCL": [
+                { "keyword": "GRANT", "category": "DCL", "what": "Gives specific permissions to a database user.", "why": "To control data access and enforce security by granting users only the privileges they need to perform their tasks (principle of least privilege).", "when": "When setting up a new user account for an application or a new database administrator.", "where": "As a standalone statement.", "syntax": "-- Gives a user named 'app_user' permission to select and insert data into the Employees table\nGRANT SELECT, INSERT ON Employees TO 'app_user'@'localhost';" },
+                { "keyword": "REVOKE", "category": "DCL", "what": "Removes specific permissions from a database user.", "why": "To restrict access to data when a user's role changes or they no longer need certain permissions.", "when": "When a user's responsibilities are reduced or an application's access needs to be tightened.", "where": "As a standalone statement.", "syntax": "-- Removes the INSERT permission from 'app_user' on the Employees table\nREVOKE INSERT ON Employees FROM 'app_user'@'localhost';" }
+              ],
+              "TCL": [
+                { "keyword": "COMMIT", "category": "TCL", "what": "Permanently saves all changes made in the current transaction.", "why": "To finalize a set of operations (e.g., an insert and an update) so that they become a permanent part of the database.", "when": "At the end of a successful logical unit of work, like transferring money between two accounts.", "where": "At the end of a transaction block.", "syntax": "BEGIN TRANSACTION;\nUPDATE Accounts SET balance = balance - 100 WHERE account_id = 1;\nUPDATE Accounts SET balance = balance + 100 WHERE account_id = 2;\nCOMMIT;" },
+                { "keyword": "ROLLBACK", "category": "TCL", "what": "Undoes all changes made in the current transaction.", "why": "To discard a set of operations if an error occurs or a condition isn't met, ensuring the database is left in its original state.", "when": "After an error is detected within a transaction block.", "where": "Within a transaction block, often in an error-handling section.", "syntax": "BEGIN TRANSACTION;\nUPDATE Accounts SET balance = balance - 100 WHERE account_id = 1;\n-- If an error occurs here, the ROLLBACK is executed.\nROLLBACK;" },
+                { "keyword": "SAVEPOINT", "category": "TCL", "what": "Sets a named marker within a transaction.", "why": "To allow for partial rollbacks within a larger transaction. You can undo changes made after the savepoint without discarding the entire transaction.", "when": "In a long, complex transaction with multiple steps, where you might want to retry a failed step without starting over.", "where": "Inside a transaction block.", "syntax": "BEGIN TRANSACTION;\nINSERT INTO Orders (OrderID, CustomerID) VALUES (1, 100);\nSAVEPOINT after_order_insert;\nINSERT INTO OrderDetails (OrderID, ProductID, Quantity) VALUES (1, 50, 2);\n-- If this second insert fails:\nROLLBACK TO SAVEPOINT after_order_insert;\nCOMMIT;" },
+                { "keyword": "SET TRANSACTION", "category": "TCL", "what": "Specifies characteristics for the transaction, such as its isolation level or read/write access.", "why": "For advanced control over how a transaction interacts with other concurrent transactions, preventing issues like dirty reads or lost updates.", "when": "At the start of a transaction that requires a specific level of consistency, like generating a critical financial report.", "where": "At the beginning of a transaction block.", "syntax": "-- Sets the transaction to be read-only and uses the highest isolation level\nSET TRANSACTION READ ONLY ISOLATION LEVEL SERIALIZABLE;" }
+              ],
+              "ClausesAndOperators": [
+                { "keyword": "FROM", "category": "Clause", "what": "Specifies the table or tables from which to retrieve data.", "why": "It's the fundamental clause that tells the database where to look for the data.", "when": "Always used in a SELECT statement.", "where": "Immediately after the SELECT list.", "syntax": "SELECT EmployeeID, FirstName FROM Employees;" },
+                { "keyword": "WHERE", "category": "Clause", "what": "Filters records based on a specific condition.", "why": "To retrieve only the rows that meet your criteria.", "when": "When you need to find a specific record or a subset of records.", "where": "After the FROM clause.", "syntax": "SELECT * FROM Employees WHERE Department = 'Engineering';" },
+                { "keyword": "GROUP BY", "category": "Clause", "what": "Groups rows that have the same values into summary rows.", "why": "To perform aggregate functions (like COUNT, SUM, AVG) on subsets of data.", "when": "When you need to find the number of employees per department or the average salary by job title.", "where": "After the WHERE clause.", "syntax": "SELECT Department, AVG(Salary) FROM Employees GROUP BY Department;" },
+                { "keyword": "HAVING", "category": "Clause", "what": "Filters the results of a GROUP BY clause based on a condition on the aggregate function.", "why": "WHERE filters rows *before* aggregation; HAVING filters groups *after* aggregation.", "when": "When you want to find departments where the average salary is above a certain threshold.", "where": "After the GROUP BY clause.", "syntax": "SELECT Department, AVG(Salary) FROM Employees GROUP BY Department HAVING AVG(Salary) > 80000;" },
+                { "keyword": "ORDER BY", "category": "Clause", "what": "Sorts the final result set.", "why": "To present data in a logical sequence.", "when": "To list names alphabetically, products by price, or posts by date.", "where": "The last clause in a SELECT statement.", "syntax": "SELECT * FROM Employees ORDER BY LastName ASC, FirstName ASC;" },
+                { "keyword": "LIMIT / FETCH", "category": "Clause", "what": "Constrains the number of rows returned by a query.", "why": "For pagination (showing page 1, page 2, etc.) or for finding top-N records.", "when": "When you want to find the top 10 highest-paid employees.", "where": "At the very end of a query. (Syntax varies: MySQL uses LIMIT, SQL Server uses TOP, standard SQL uses FETCH).", "syntax": "-- MySQL Syntax\nSELECT * FROM Employees ORDER BY Salary DESC LIMIT 10;" },
+                { "keyword": "OFFSET", "category": "Clause", "what": "Skips a specified number of rows before starting to return rows from the query.", "why": "Used with LIMIT or FETCH for implementing pagination.", "when": "To show the second page of results, where each page has 10 items, you would skip the first 10.", "where": "Used with LIMIT or FETCH.", "syntax": "-- MySQL Syntax for showing results 11-20\nSELECT * FROM Employees ORDER BY EmployeeID LIMIT 10 OFFSET 10;" },
+                { "keyword": "JOIN", "category": "Clause", "what": "Combines rows from two or more tables based on a related column. Types include INNER, LEFT, RIGHT, FULL OUTER, CROSS.", "why": "To query related data that is normalized across multiple tables.", "when": "To get a customer's name and the details of all orders they've placed.", "where": "In the FROM clause.", "syntax": "-- Gets each employee and the name of the project they are on\nSELECT e.FirstName, p.ProjectName\nFROM Employees e\nINNER JOIN Projects p ON e.ProjectID = p.ProjectID;" },
+                { "keyword": "ON", "category": "Operator", "what": "Specifies the condition for joining tables.", "why": "It defines how records from one table are matched to records in another.", "when": "Always used with a JOIN clause.", "where": "Immediately following a JOIN clause.", "syntax": "SELECT * FROM Orders o JOIN Customers c ON o.CustomerID = c.CustomerID;" },
+                { "keyword": "USING", "category": "Operator", "what": "A shorthand for the ON clause when the columns to be joined have the same name in both tables.", "why": "For convenience and cleaner syntax.", "when": "When joining two tables that both have a column named 'CustomerID'.", "where": "As a replacement for ON in a JOIN clause.", "syntax": "SELECT * FROM Orders JOIN Customers USING (CustomerID);" },
+                { "keyword": "UNION", "category": "Operator", "what": "Combines the result sets of two or more SELECT statements and removes duplicate rows.", "why": "To merge data from multiple tables that have similar structures.", "when": "To get a single list of all current and former employees from two separate tables.", "where": "Between two compatible SELECT statements.", "syntax": "SELECT Email FROM Customers UNION SELECT Email FROM Prospects;" },
+                { "keyword": "UNION ALL", "category": "Operator", "what": "Combines the result sets of two or more SELECT statements but includes all duplicate rows.", "why": "It's faster than UNION because it doesn't have to check for duplicates. Use it when you know there are no duplicates or when you want to keep them.", "when": "To combine log data from multiple tables where duplicates are meaningful.", "where": "Between two compatible SELECT statements.", "syntax": "SELECT LogMessage FROM SystemLogs UNION ALL SELECT LogMessage FROM AppLogs;" },
+                { "keyword": "INTERSECT", "category": "Operator", "what": "Returns only the rows that appear in both result sets of two SELECT statements.", "why": "To find the common records between two datasets.", "when": "To find customers who are also registered as suppliers.", "where": "Between two compatible SELECT statements.", "syntax": "SELECT CustomerID FROM OnlineOrders INTERSECT SELECT CustomerID FROM InStorePurchases;" },
+                { "keyword": "EXCEPT / MINUS", "category": "Operator", "what": "Returns rows from the first SELECT statement that are not present in the second SELECT statement.", "why": "To find records that exist in one set but not the other.", "when": "To find all products that have never been sold.", "where": "Between two compatible SELECT statements. (Syntax is EXCEPT in standard SQL/PostgreSQL, MINUS in Oracle).", "syntax": "SELECT ProductID FROM Products EXCEPT SELECT ProductID FROM OrderDetails;" },
+                { "keyword": "AND, OR, NOT", "category": "Operator", "what": "Logical operators used to combine or negate conditions in a WHERE clause.", "why": "To create complex, multi-part filtering logic.", "when": "To find employees who are in the 'Sales' department AND have a salary over 50000.", "where": "In WHERE and HAVING clauses.", "syntax": "SELECT * FROM Employees WHERE (Department = 'Sales' OR Department = 'Marketing') AND NOT Location = 'Remote';" },
+                { "keyword": "IN", "category": "Operator", "what": "A shorthand for multiple OR conditions. It checks if a value matches any value in a list.", "why": "To write cleaner and often more efficient queries than multiple ORs.", "when": "To find all employees in the 'Sales', 'Marketing', or 'HR' departments.", "where": "In WHERE and HAVING clauses.", "syntax": "SELECT * FROM Employees WHERE Department IN ('Sales', 'Marketing', 'HR');" },
+                { "keyword": "BETWEEN", "category": "Operator", "what": "Selects values within a given range. The range is inclusive.", "why": "To easily filter by a numeric or date range.", "when": "To find employees with a salary between 50000 and 70000.", "where": "In WHERE and HAVING clauses.", "syntax": "SELECT * FROM Employees WHERE Salary BETWEEN 50000 AND 70000;" },
+                { "keyword": "LIKE", "category": "Operator", "what": "Used in a WHERE clause to search for a specified pattern in a column. Uses wildcards: '%' (matches any sequence of characters) and '_' (matches any single character).", "why": "For powerful pattern matching and partial text searches.", "when": "To find all employees whose first name starts with 'J'.", "where": "In WHERE and HAVING clauses.", "syntax": "SELECT * FROM Employees WHERE FirstName LIKE 'J%';" },
+                { "keyword": "IS NULL / IS NOT NULL", "category": "Operator", "what": "Checks if a column's value is NULL (empty) or not.", "why": "Because NULL is a special state, it cannot be compared with standard operators like = or !=.", "when": "To find all employees who have not yet been assigned a department.", "where": "In WHERE and HAVING clauses.", "syntax": "SELECT * FROM Employees WHERE Department IS NULL;" },
+                { "keyword": "EXISTS", "category": "Operator", "what": "Tests for the existence of any records in a subquery. It returns TRUE if the subquery returns one or more records.", "why": "Often more efficient than a JOIN for simply checking if a related record exists.", "when": "To find all customers who have placed at least one order.", "where": "In a WHERE clause.", "syntax": "SELECT CustomerName FROM Customers c WHERE EXISTS (SELECT 1 FROM Orders o WHERE o.CustomerID = c.CustomerID);" },
+                { "keyword": "CASE", "category": "Operator", "what": "Goes through conditions and returns a value when the first condition is met, like an if-then-else statement.", "why": "To create conditional logic within a query, allowing for categorization or transformation of data on the fly.", "when": "To create a new column that categorizes employees as 'High', 'Medium', or 'Low' earners based on their salary.", "where": "Most commonly in the SELECT list, but can also be used in WHERE and ORDER BY clauses.", "syntax": "SELECT FirstName, Salary,\nCASE\n    WHEN Salary > 100000 THEN 'High Earner'\n    WHEN Salary > 60000 THEN 'Medium Earner'\n    ELSE 'Standard Earner'\nEND AS SalaryCategory\nFROM Employees;" },
+                { "keyword": "AS", "category": "Keyword", "what": "Renames a column or table with a temporary name (an alias).", "why": "To make column names in the result set more readable or to shorten table names in a complex join.", "when": "When using aggregate functions or joining tables.", "where": "In the SELECT list for columns and in the FROM clause for tables.", "syntax": "SELECT FirstName AS Name, AVG(Salary) AS AverageSalary FROM Employees e;" },
+                { "keyword": "DISTINCT", "category": "Keyword", "what": "Returns only unique (different) values.", "why": "To remove duplicate rows from a result set.", "when": "To get a list of all unique departments where employees work.", "where": "Immediately after the SELECT keyword.", "syntax": "SELECT DISTINCT Department FROM Employees;" },
+                { "keyword": "WITH", "category": "Keyword", "what": "Creates a Common Table Expression (CTE), which is a temporary, named result set that you can reference within another SQL statement.", "why": "To break down complex queries into simple, logical building blocks, improving readability and maintainability.", "when": "In a multi-step query where the output of one step is the input for the next.", "where": "At the beginning of a SELECT, INSERT, UPDATE, or DELETE statement.", "syntax": "WITH SalesEmployees AS (\n    SELECT EmployeeID, FirstName, LastName\n    FROM Employees\n    WHERE Department = 'Sales'\n)\nSELECT * FROM SalesEmployees;" }
+              ],
+              "Constraints": [
+                { "keyword": "PRIMARY KEY", "category": "Constraint", "what": "A constraint that uniquely identifies each record in a table. It must contain unique values and cannot contain NULL values.", "why": "To ensure data integrity and provide a reliable way to reference specific rows from other tables.", "when": "Applied to the main identifier column (e.g., EmployeeID, CustomerID) when creating a table.", "where": "In a CREATE TABLE or ALTER TABLE statement.", "syntax": "CREATE TABLE Products (\n    ProductID INT PRIMARY KEY,\n    ProductName VARCHAR(100)\n);" },
+                { "keyword": "FOREIGN KEY", "category": "Constraint", "what": "A key used to link two tables together. It is a field (or collection of fields) in one table that refers to the PRIMARY KEY in another table.", "why": "To enforce referential integrity, ensuring that a relationship between tables remains valid (e.g., you can't create an order for a customer who doesn't exist).", "when": "When creating a table that references another table.", "where": "In a CREATE TABLE or ALTER TABLE statement.", "syntax": "CREATE TABLE Orders (\n    OrderID INT PRIMARY KEY,\n    OrderDate DATE,\n    CustomerID INT,\n    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)\n);" },
+                { "keyword": "UNIQUE", "category": "Constraint", "what": "Ensures that all values in a column are different.", "why": "To prevent duplicate entries in a column that isn't a primary key, such as an email address or a product SKU.", "when": "When business rules dictate that a certain field must be unique for every record.", "where": "In a CREATE TABLE or ALTER TABLE statement.", "syntax": "CREATE TABLE Users (\n    UserID INT PRIMARY KEY,\n    Username VARCHAR(50) UNIQUE,\n    Email VARCHAR(100) UNIQUE\n);" },
+                { "keyword": "NOT NULL", "category": "Constraint", "what": "Ensures that a column cannot have a NULL value.", "why": "To enforce that a field must always contain a value. This is critical for required information.", "when": "For essential data fields like a user's name, an order date, or a product price.", "where": "In a CREATE TABLE or ALTER TABLE statement.", "syntax": "CREATE TABLE Employees (\n    EmployeeID INT PRIMARY KEY,\n    FirstName VARCHAR(50) NOT NULL,\n    LastName VARCHAR(50) NOT NULL\n);" },
+                { "keyword": "CHECK", "category": "Constraint", "what": "Ensures that the values in a column satisfy a specific condition.", "why": "To enforce business rules at the database level, ensuring data validity.", "when": "To ensure that a 'Salary' column is always a positive number or a 'Discount' column is between 0 and 1.", "where": "In a CREATE TABLE or ALTER TABLE statement.", "syntax": "CREATE TABLE Products (\n    ProductID INT PRIMARY KEY,\n    Price DECIMAL(10, 2) NOT NULL CHECK (Price > 0)\n);" },
+                { "keyword": "DEFAULT", "category": "Constraint", "what": "Provides a default value for a column when no value is specified during an INSERT.", "why": "To simplify data entry and ensure a baseline value exists for a field.", "when": "To set a default 'Status' for a new order to 'Pending' or a 'JoinDate' to the current date.", "where": "In a CREATE TABLE or ALTER TABLE statement.", "syntax": "CREATE TABLE Orders (\n    OrderID INT PRIMARY KEY,\n    OrderStatus VARCHAR(20) DEFAULT 'Pending',\n    OrderDate DATE DEFAULT CURRENT_DATE\n);" },
+                { "keyword": "REFERENCES", "category": "Keyword", "what": "Used as part of a FOREIGN KEY constraint to specify the table and column that the foreign key is pointing to.", "why": "It's the essential link in the FOREIGN KEY definition that establishes the relationship.", "when": "Always used when defining a FOREIGN KEY.", "where": "Within the FOREIGN KEY clause in a CREATE TABLE or ALTER TABLE statement.", "syntax": "-- The REFERENCES keyword links the CustomerID in this table to the CustomerID in the Customers table.\nCREATE TABLE Orders (\n    OrderID INT PRIMARY KEY,\n    CustomerID INT,\n    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)\n);" }
+              ]
+            };
+
+            const categoryInfo = {
+                'DDL': { name: 'Data Definition Language', color: 'blue', icon: 'edit_document' },
+                'DML': { name: 'Data Manipulation Language', color: 'green', icon: 'input' },
+                'DCL': { name: 'Data Control Language', color: 'yellow', icon: 'security' },
+                'TCL': { name: 'Transaction Control Language', color: 'red', icon: 'sync' },
+                'ClausesAndOperators': { name: 'Clauses, Operators & Keywords', color: 'purple', icon: 'functions' },
+                'Constraints': { name: 'Constraints', color: 'teal', icon: 'lock' }
+            };
+
+            const categoryColors = {
+                blue: { bg: 'bg-blue-50', text: 'text-blue-800', border: 'border-blue-200' },
+                green: { bg: 'bg-green-50', text: 'text-green-800', border: 'border-green-200' },
+                purple: { bg: 'bg-purple-50', text: 'text-purple-800', border: 'border-purple-200' },
+                yellow: { bg: 'bg-yellow-50', text: 'text-yellow-800', border: 'border-yellow-200' },
+                red: { bg: 'bg-red-50', text: 'text-red-800', border: 'border-red-200' },
+                teal: { bg: 'bg-teal-50', text: 'text-teal-800', border: 'border-teal-200' }
+            };
+
+            const container = document.getElementById('keyword-container');
+            const searchInput = document.getElementById('keyword-search');
+            const modal = document.getElementById('keyword-modal');
+            const modalContent = document.getElementById('modal-content');
+            const dropdownButton = document.getElementById('dropdown-button');
+            const dropdownContent = document.getElementById('dropdown-content');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            function formatSqlSyntax(sql) {
+                const keywords = [
+                    'SELECT', 'FROM', 'WHERE', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE',
+                    'CREATE', 'TABLE', 'DATABASE', 'ALTER', 'ADD', 'COLUMN', 'MODIFY', 'DROP', 'INDEX',
+                    'TRUNCATE', 'RENAME', 'TO', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'FULL', 'OUTER', 'ON',
+                    'GROUP', 'BY', 'ORDER', 'ASC', 'DESC', 'HAVING', 'LIMIT', 'OFFSET', 'AS', 'DISTINCT',
+                    'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'AND', 'OR', 'NOT', 'IN', 'BETWEEN', 'LIKE',
+                    'IS', 'NULL', 'GRANT', 'REVOKE', 'COMMIT', 'ROLLBACK', 'SAVEPOINT', 'TRANSACTION',
+                    'MERGE', 'USING', 'MATCHED', 'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE',
+                    'CHECK', 'DEFAULT', 'WITH'
+                ];
+                const functions = ['AVG', 'COUNT', 'SUM', 'MIN', 'MAX', 'CURRENT_DATE'];
+
+                let html = sql.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                // Comments
+                html = html.replace(/-- (.*)/g, '<span class="sql-comment">-- $1</span>');
+                
+                // Strings
+                html = html.replace(/'(.*?)'/g, '<span class="sql-string">\'$1\'</span>');
+
+                // Keywords
+                const keywordRegex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
+                html = html.replace(keywordRegex, '<span class="sql-keyword">$1</span>');
+
+                // Functions
+                const functionRegex = new RegExp(`\\b(${functions.join('|')})\\b`, 'gi');
+                html = html.replace(functionRegex, '<span class="sql-function">$1</span>');
+
+                // Numbers
+                html = html.replace(/\b(\d+(\.\d+)?)\b/g, '<span class="sql-number">$1</span>');
+
+                // Operators
+                html = html.replace(/(=|!=|<>|>=|<=|>|<|\*|\+|-|\/|%|\(|\))/g, '<span class="sql-operator">$1</span>');
+                
+                return html;
+            }
+
+            function renderKeywords(filter = '') {
+                container.innerHTML = '';
+                
+                Object.entries(sqlData).forEach(([categoryKey, keywords]) => {
+                    const filteredKeywords = keywords.filter(kw => 
+                        kw.keyword.toLowerCase().includes(filter.toLowerCase()) || 
+                        kw.what.toLowerCase().includes(filter.toLowerCase())
+                    );
+
+                    if (filteredKeywords.length > 0) {
+                        const info = categoryInfo[categoryKey];
+                        const colors = categoryColors[info.color];
+
+                        let categoryHtml = `
+                            <section class="fade-in">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="material-symbols-outlined p-2 rounded-full ${colors.bg} ${colors.text}">${info.icon}</span>
+                                    <h2 class="text-lg font-bold font-heading">${info.name}</h2>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        `;
+                        
+                        filteredKeywords.forEach(kw => {
+                            const sanitizedKeywordData = JSON.stringify(kw).replace(/'/g, '&#39;');
+                            const sanitizedCategoryData = JSON.stringify(info).replace(/'/g, '&#39;');
+                            categoryHtml += `
+                                <div class="keyword-card cursor-pointer bg-white p-3 rounded-lg border ${colors.border} shadow-sm" data-keyword='${sanitizedKeywordData}' data-category='${sanitizedCategoryData}'>
+                                    <h3 class="font-medium text-slate-800 text-sm">${kw.keyword}</h3>
+                                    <p class="text-xs text-slate-500 mt-1 line-clamp-2">${kw.what}</p>
+                                </div>
+                            `;
+                        });
+                        
+                        categoryHtml += `</div></section>`;
+                        container.innerHTML += categoryHtml;
+                    }
+                });
+            }
+
+            function showModal(keyword, categoryInfo) {
+                const colors = categoryColors[categoryInfo.color];
+                modalContent.innerHTML = `
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <div class="mb-4 pr-4">
+                                <p class="text-sm font-semibold ${colors.text}">${categoryInfo.name}</p>
+                                <h2 class="text-2xl font-bold font-heading mt-1">${keyword.keyword}</h2>
+                            </div>
+                            <button id="close-modal" class="p-2 -m-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        <div class="space-y-3 mb-5">
+                            <div class="info-card"><div class="icon"><span class="material-symbols-outlined text-base">help</span></div><div><h3 class="font-semibold font-heading text-slate-800 text-sm">What it is</h3><p class="text-slate-600 text-sm mt-1">${keyword.what}</p></div></div>
+                            <div class="info-card"><div class="icon"><span class="material-symbols-outlined text-base">psychology</span></div><div><h3 class="font-semibold font-heading text-slate-800 text-sm">Why it's used</h3><p class="text-slate-600 text-sm mt-1">${keyword.why}</p></div></div>
+                            <div class="info-card"><div class="icon"><span class="material-symbols-outlined text-base">schedule</span></div><div><h3 class="font-semibold font-heading text-slate-800 text-sm">When to use it</h3><p class="text-slate-600 text-sm mt-1">${keyword.when}</p></div></div>
+                            <div class="info-card"><div class="icon"><span class="material-symbols-outlined text-base">pin_drop</span></div><div><h3 class="font-semibold font-heading text-slate-800 text-sm">Where it's used</h3><p class="text-slate-600 text-sm mt-1">${keyword.where}</p></div></div>
+                        </div>
+                        <div class="syntax-block">
+                            <div class="header">
+                                <span class="text-xs font-semibold text-slate-300">SYNTAX EXAMPLE</span>
+                                <button class="copy-btn"><span class="material-symbols-outlined text-sm">content_copy</span><span class="copy-text">Copy</span></button>
+                            </div>
+                            <pre><code>${formatSqlSyntax(keyword.syntax)}</code></pre>
+                        </div>
+                    </div>
+                `;
+                modal.classList.add('visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function hideModal() {
+                modal.classList.remove('visible');
+                document.body.style.overflow = '';
+            }
+
+            // --- Event Listeners ---
+
+            searchInput.addEventListener('input', (e) => {
+                renderKeywords(e.target.value);
+            });
+
+            container.addEventListener('click', (e) => {
+                const card = e.target.closest('.keyword-card');
+                if (card) {
+                    try {
+                        const keywordData = JSON.parse(card.dataset.keyword.replace(/&#39;/g, "'"));
+                        const categoryData = JSON.parse(card.dataset.category.replace(/&#39;/g, "'"));
+                        showModal(keywordData, categoryData);
+                    } catch (error) {
+                        console.error("Failed to parse keyword data:", error);
+                    }
+                }
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.closest('#close-modal')) {
+                    hideModal();
+                }
+                const button = e.target.closest('.copy-btn');
+                if (button) {
+                    const code = button.closest('.syntax-block').querySelector('code').innerText;
+                    const textArea = document.createElement("textarea");
+                    textArea.value = code;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        const copyText = button.querySelector('.copy-text');
+                        copyText.textContent = 'Copied!';
+                        setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
+                    } catch (err) { console.error('Fallback: Oops, unable to copy', err); }
+                    document.body.removeChild(textArea);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape" && modal.classList.contains('visible')) {
+                    hideModal();
+                }
+            });
+            
+            // Dropdown Menu Logic
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownContent.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (dropdownMenu && !dropdownMenu.contains(event.target)) {
+                    dropdownContent.classList.add('hidden');
+                }
+            });
+
+            // --- Initial Render ---
+            renderKeywords();
+        });
+    </script>
+</body>
+</html>
