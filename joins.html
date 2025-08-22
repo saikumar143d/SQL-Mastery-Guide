@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Mastery Guide - The Art of the JOIN</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3e%3cg%3e%3cellipse cx='12' cy='5' rx='9' ry='3' fill='none' stroke='%23f0abfc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'/%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3' fill='none' stroke='%23f0abfc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'/%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5' fill='none' stroke='%23f0abfc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'/%3e%3cellipse cx='12' cy='5' rx='9' ry='3' fill='none' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3' fill='none' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5' fill='none' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/g%3e%3c/svg%3e">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fira Code & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .font-code { font-family: 'Fira Code', monospace; }
+        
+        /* SQL Syntax Highlighting */
+        pre { overflow-x: auto; }
+        .sql-keyword { color: #c084fc; font-weight: 500; }
+        .sql-function { color: #60a5fa; }
+        .sql-alias { color: #a78bfa; }
+        .sql-operator { color: #93c5fd; }
+
+        .nav-btn { padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: 600; transition: all 0.2s ease-in-out; border: 1px solid #4b5563; background-color: #374151; color: #d1d5db; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.875rem; }
+        .nav-btn:hover { background-color: #4b5563; border-color: #6b7280; }
+        .nav-btn.active { background-color: #a78bfa; color: #111827; border-color: #a78bfa; box-shadow: 0 0 20px rgba(167, 139, 250, 0.3); }
+        
+        .join-btn { padding: 0.3rem 0.7rem; border-radius: 8px; font-weight: 600; transition: all 0.2s ease-in-out; border: 1px solid #4b5563; background-color: #374151; color: #d1d5db; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; }
+        .join-btn:hover { background-color: #4b5563; border-color: #6b7280; }
+        .join-btn.active { background-color: #a78bfa; color: #111827; border-color: #a78bfa; box-shadow: 0 0 20px rgba(167, 139, 250, 0.3); }
+
+        .join-table { border: 1px solid #4b5563; border-radius: 12px; overflow: hidden; background-color: #1f2937; min-height: 150px; }
+        .join-table .header { padding: 0.6rem 0.75rem; font-weight: 700; font-size: 0.875rem; text-align: center; border-bottom: 1px solid #4b5563; }
+        .left-table .header { background-color: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+        .right-table .header { background-color: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
+        .result-table .header { background-color: rgba(107, 114, 128, 0.2); color: #d1d5db; }
+        
+        .join-table table th, .join-table table td { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+        .join-table table th { background-color: #374151; color: #d1d5db; }
+        .join-table table tr { transition: background-color 0.1s ease-in-out; position: relative; }
+        .key-col { font-weight: 600; color: #a78bfa; }
+        
+        .row-comparing::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.3), rgba(250, 204, 21, 0.0));
+            animation: scan 0.3s linear; border-left: 2px solid #facc15;
+        }
+        @keyframes scan { from { left: -100%; } to { left: 100%; } }
+
+        .row-match { background-color: rgba(52, 211, 153, 0.15) !important; }
+        .row-no-match { background-color: rgba(239, 68, 68, 0.15) !important; }
+        .row-final { animation: fadeIn 0.3s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .null-value { color: #6b7280; font-style: italic; }
+        #status-text { font-weight: 600; color: #e5e7eb; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+        #status-detail { font-size: 0.8rem; color: #9ca3af; }
+        
+        #venn-diagram-container .venn-circle {
+            stroke-dasharray: 315; stroke-dashoffset: 315;
+            animation: draw-circle 0.5s ease-out forwards;
+        }
+        #venn-diagram-container .venn-fill { transition: opacity 0.4s 0.3s ease-in-out; }
+        @keyframes draw-circle { to { stroke-dashoffset: 0; } }
+    </style>
+</head>
+<body class="p-4 sm:p-6">
+    <header class="w-full mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex-1 flex justify-start">
+             <a href="index.html" class="inline-flex items-center gap-3 text-slate-200">
+                <span class="material-symbols-outlined text-violet-400" style="font-size: 32px;">database</span>
+                <h1 class="font-bold font-heading text-2xl">SQL Guide</h1>
+            </a>
+        </div>
+        <div class="flex-1 flex justify-center" id="example-selector-container">
+            <!-- Example selector will be injected here -->
+        </div>
+        <div class="flex-1 flex justify-end items-center gap-3">
+            <a href="joins.html" class="nav-btn active"><span class="material-symbols-outlined" style="font-size: 1.25rem;">link</span>JOINs</a>
+            <div class="relative" id="nav-dropdown-menu">
+                <button id="nav-dropdown-button" class="nav-btn">
+                    <span class="material-symbols-outlined">menu</span>
+                    Navigate
+                </button>
+                <div id="nav-dropdown-content" class="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg border border-gray-600 hidden z-20">
+                    <a href="foundations.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Foundations</a>
+                    <a href="setup.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Setup</a>
+                    <a href="commands.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Commands</a>
+                    <a href="keywords.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Keywords</a>
+                    <a href="advanced.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Advanced</a>
+                    <a href="interview.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Interview Prep</a>
+                    <a href="ai.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">AI Assistant</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-full mx-auto">
+        <section id="joins" class="bg-gray-800/50 p-4 sm:p-6 rounded-xl border border-gray-700">
+            <div id="controls-container" class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
+                <div id="join-buttons-container" class="flex justify-center flex-wrap gap-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 items-center bg-gray-900/50 rounded-xl p-4 sm:p-6 mb-6">
+                 <div id="join-info-container" class="w-full"></div>
+                 <div id="venn-diagram-container" class="flex justify-center items-center w-full">
+                    <svg width="200" height="120" viewBox="0 0 200 120">
+                       <defs><mask id="mask-left"><rect fill="white" x="0" y="0" width="200" height="120"/><circle cx="130" cy="60" r="50"/></mask><mask id="mask-right"><rect fill="white" x="0" y="0" width="200" height="120"/><circle cx="70" cy="60" r="50"/></mask></defs>
+                       <g id="venn-fills">
+                           <path class="venn-fill" id="venn-left-only" d="M70,10 A50,50 0 1,0 70,110 A50,50 0 0,0 70,10 Z" fill="#8b5cf6" mask="url(#mask-left)" opacity="0"></path>
+                           <path class="venn-fill" id="venn-right-only" d="M130,10 A50,50 0 1,0 130,110 A50,50 0 0,0 130,10 Z" fill="#10b981" mask="url(#mask-right)" opacity="0"></path>
+                           <path class="venn-fill" id="venn-intersect" d="M130,10 A50,50 0 1,0 130,110 A50,50 0 0,0 130,10 Z" fill="#a78bfa" mask="url(#mask-left)" opacity="0"></path>
+                       </g>
+                       <circle class="venn-circle" cx="70" cy="60" r="50" fill="none" stroke="#a78bfa" stroke-width="2"/>
+                       <circle class="venn-circle" cx="130" cy="60" r="50" fill="none" stroke="#34d399" stroke-width="2"/>
+                       <text x="45" y="65" fill="white" font-size="14" font-weight="bold">A</text><text x="145" y="65" fill="white" font-size="14" font-weight="bold">B</text>
+                    </svg>
+                </div>
+            </div>
+
+            <div id="join-process-status" class="text-center mb-4">
+                <div id="status-text">Ready</div>
+                <div id="status-detail">Select a join type</div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div id="left-table-container" class="join-table left-table"></div>
+                <div id="right-table-container" class="join-table right-table"></div>
+            </div>
+            <div class="w-full">
+                 <div id="result-table-container" class="join-table result-table"></div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fullJoinData = {
+            "INNER_JOIN": { "description": "An INNER JOIN returns only the rows where there is a match in both tables based on the join condition.", "uses": "Commonly used when you need to combine related data from two or more tables and only care about matching records.", "simple_example": { "datasets": { "Employees": [ { "EmpID": 1, "Name": "Alice", "DeptID": 10 }, { "EmpID": 2, "Name": "Bob", "DeptID": 20 }, { "EmpID": 3, "Name": "Charlie", "DeptID": 30 }, { "EmpID": 4, "Name": "David", "DeptID": 40 }, { "EmpID": 5, "Name": "Eva", "DeptID": 20 }, { "EmpID": 6, "Name": "Frank", "DeptID": 50 }, { "EmpID": 7, "Name": "Grace", "DeptID": 10 }, { "EmpID": 8, "Name": "Helen", "DeptID": 60 } ], "Departments": [ { "DeptID": 10, "DeptName": "HR" }, { "DeptID": 20, "DeptName": "Finance" }, { "DeptID": 30, "DeptName": "IT" }, { "DeptID": 40, "DeptName": "Marketing" }, { "DeptID": 70, "DeptName": "Legal" } ] }, "query": "SELECT e.EmpID, e.Name, d.DeptName\nFROM Employees e\nINNER JOIN Departments d ON e.DeptID = d.DeptID;", "explanation": "This query returns only employees who belong to a department that exists in the Departments table. Employees with DeptID 50 and 60 are excluded because no matching DeptID exists in Departments.", "use_case": "Linking employees to their respective departments when both employee and department exist." }, "complex_example": { "datasets": { "Orders": [ { "OrderID": 101, "CustomerID": 1, "OrderDate": "2023-01-05" }, { "OrderID": 102, "CustomerID": 2, "OrderDate": "2023-01-10" }, { "OrderID": 103, "CustomerID": 3, "OrderDate": "2023-02-15" }, { "OrderID": 104, "CustomerID": 4, "OrderDate": "2023-02-20" }, { "OrderID": 105, "CustomerID": 5, "OrderDate": "2023-03-01" }, { "OrderID": 106, "CustomerID": 8, "OrderDate": "2023-03-05" }, { "OrderID": 107, "CustomerID": 9, "OrderDate": "2023-03-10" }, { "OrderID": 108, "CustomerID": 2, "OrderDate": "2023-03-15" } ], "Customers": [ { "CustomerID": 1, "CustomerName": "John", "City": "New York" }, { "CustomerID": 2, "CustomerName": "Sara", "City": "Chicago" }, { "CustomerID": 3, "CustomerName": "Mike", "City": "Boston" }, { "CustomerID": 4, "CustomerName": "Emma", "City": "Seattle" }, { "CustomerID": 6, "CustomerName": "Liam", "City": "Austin" }, { "CustomerID": 7, "CustomerName": "Olivia", "City": "Dallas" }, { "CustomerID": 8, "CustomerName": "Noah", "City": "San Francisco" } ] }, "query": "SELECT o.OrderID, o.OrderDate, c.CustomerName, c.City\nFROM Orders o\nINNER JOIN Customers c ON o.CustomerID = c.CustomerID;", "explanation": "This query fetches only the orders that have a matching customer in the Customers table. OrderID 107 (CustomerID 9) is excluded since that customer does not exist in Customers.", "use_case": "Finding valid orders that are linked to real customers, eliminating orphan records." } },
+            "LEFT_JOIN": { "description": "A LEFT JOIN returns all rows from the left table and the matched rows from the right table. Rows in the left table with no match in the right table will still appear, with NULLs for columns from the right table.", "uses": "Useful when you want to keep all records from the primary table, even if there are no matches in the secondary table.", "simple_example": { "datasets": { "Employees": [ { "EmpID": 1, "Name": "Alice", "DeptID": 10 }, { "EmpID": 2, "Name": "Bob", "DeptID": 20 }, { "EmpID": 3, "Name": "Charlie", "DeptID": 30 }, { "EmpID": 4, "Name": "David", "DeptID": 40 }, { "EmpID": 5, "Name": "Eva", "DeptID": 50 }, { "EmpID": 6, "Name": "Frank", "DeptID": 60 }, { "EmpID": 7, "Name": "Grace", "DeptID": 20 }, { "EmpID": 8, "Name": "Helen", "DeptID": 70 } ], "Departments": [ { "DeptID": 10, "DeptName": "HR" }, { "DeptID": 20, "DeptName": "Finance" }, { "DeptID": 30, "DeptName": "IT" }, { "DeptID": 40, "DeptName": "Marketing" } ] }, "query": "SELECT e.EmpID, e.Name, d.DeptName\nFROM Employees e\nLEFT JOIN Departments d ON e.DeptID = d.DeptID;", "explanation": "All employees are returned. Employees with DeptID 50, 60, and 70 will appear with NULL for DeptName because there are no matching departments.", "use_case": "Ensuring all employees are listed, even if their department hasn’t been defined." }, "complex_example": { "datasets": { "Orders": [ { "OrderID": 201, "CustomerID": 1, "OrderDate": "2023-01-05" }, { "OrderID": 202, "CustomerID": 2, "OrderDate": "2023-01-10" }, { "OrderID": 203, "CustomerID": 3, "OrderDate": "2023-02-15" }, { "OrderID": 204, "CustomerID": 6, "OrderDate": "2023-02-20" }, { "OrderID": 205, "CustomerID": 8, "OrderDate": "2023-03-01" }, { "OrderID": 206, "CustomerID": 10, "OrderDate": "2023-03-05" }, { "OrderID": 207, "CustomerID": 11, "OrderDate": "2023-03-10" }, { "OrderID": 208, "CustomerID": 2, "OrderDate": "2023-03-15" } ], "Customers": [ { "CustomerID": 1, "CustomerName": "John", "City": "New York" }, { "CustomerID": 2, "CustomerName": "Sara", "City": "Chicago" }, { "CustomerID": 3, "CustomerName": "Mike", "City": "Boston" }, { "CustomerID": 4, "CustomerName": "Emma", "City": "Seattle" }, { "CustomerID": 5, "CustomerName": "Liam", "City": "Austin" }, { "CustomerID": 6, "CustomerName": "Olivia", "City": "Dallas" }, { "CustomerID": 7, "CustomerName": "Noah", "City": "San Francisco" } ] }, "query": "SELECT o.OrderID, o.OrderDate, c.CustomerName, c.City\nFROM Orders o\nLEFT JOIN Customers c ON o.CustomerID = c.CustomerID;", "explanation": "All orders are returned. Orders with CustomerID 8, 10, and 11 will have NULL for CustomerName and City because no such customers exist.", "use_case": "When you want to list all orders, even if some are placed by unregistered or missing customers." } },
+            "RIGHT_JOIN": { "description": "A RIGHT JOIN returns all rows from the right table and the matched rows from the left table. Rows in the right table with no match in the left table will still appear, with NULLs for columns from the left table.", "uses": "Useful when you want to keep all records from the secondary table, regardless of whether they have a match in the primary table.", "simple_example": { "datasets": { "Employees": [ { "EmpID": 1, "Name": "Alice", "DeptID": 10 }, { "EmpID": 2, "Name": "Bob", "DeptID": 20 }, { "EmpID": 3, "Name": "Charlie", "DeptID": 30 }, { "EmpID": 4, "Name": "David", "DeptID": 40 }, { "EmpID": 5, "Name": "Eva", "DeptID": 50 }, { "EmpID": 6, "Name": "Frank", "DeptID": 20 }, { "EmpID": 7, "Name": "Grace", "DeptID": 60 }, { "EmpID": 8, "Name": "Helen", "DeptID": 70 } ], "Departments": [ { "DeptID": 10, "DeptName": "HR" }, { "DeptID": 20, "DeptName": "Finance" }, { "DeptID": 30, "DeptName": "IT" }, { "DeptID": 40, "DeptName": "Marketing" }, { "DeptID": 90, "DeptName": "Legal" } ] }, "query": "SELECT e.EmpID, e.Name, d.DeptName\nFROM Employees e\nRIGHT JOIN Departments d ON e.DeptID = d.DeptID;", "explanation": "All departments are returned. The Legal department (DeptID 90) appears with NULL for employees because no employee belongs to it.", "use_case": "Ensuring all departments are listed, even if no employees are assigned to them." }, "complex_example": { "datasets": { "Orders": [ { "OrderID": 301, "CustomerID": 1, "OrderDate": "2023-01-10" }, { "OrderID": 302, "CustomerID": 2, "OrderDate": "2023-01-15" }, { "OrderID": 303, "CustomerID": 3, "OrderDate": "2023-02-01" }, { "OrderID": 304, "CustomerID": 6, "OrderDate": "2023-02-10" }, { "OrderID": 305, "CustomerID": 8, "OrderDate": "2023-03-01" }, { "OrderID": 306, "CustomerID": 9, "OrderDate": "2023-03-05" }, { "OrderID": 307, "CustomerID": 2, "OrderDate": "2023-03-10" }, { "OrderID": 308, "CustomerID": 10, "OrderDate": "2023-03-15" } ], "Customers": [ { "CustomerID": 1, "CustomerName": "John", "City": "New York" }, { "CustomerID": 2, "CustomerName": "Sara", "City": "Chicago" }, { "CustomerID": 3, "CustomerName": "Mike", "City": "Boston" }, { "CustomerID": 4, "CustomerName": "Emma", "City": "Seattle" }, { "CustomerID": 5, "CustomerName": "Liam", "City": "Austin" }, { "CustomerID": 6, "CustomerName": "Olivia", "City": "Dallas" }, { "CustomerID": 7, "CustomerName": "Noah", "City": "San Francisco" }, { "CustomerID": 11, "CustomerName": "Sophia", "City": "Houston" } ] }, "query": "SELECT o.OrderID, o.OrderDate, c.CustomerName, c.City\nFROM Orders o\nRIGHT JOIN Customers c ON o.CustomerID = c.CustomerID;", "explanation": "All customers are returned. Customer Sophia (CustomerID 11) appears with NULL for orders because she has not placed any order.", "use_case": "When you want to list all customers, regardless of whether they have made an order." } },
+            "FULL_OUTER_JOIN": { "description": "A FULL OUTER JOIN returns all rows from both tables, with NULLs where there is no match.", "uses": "Useful when you want a complete view of both tables, showing all matches and non-matches on both sides.", "simple_example": { "datasets": { "Students": [ { "StudentID": 1, "Name": "Alice" }, { "StudentID": 2, "Name": "Bob" }, { "StudentID": 3, "Name": "Charlie" }, { "StudentID": 4, "Name": "David" }, { "StudentID": 5, "Name": "Eva" }, { "StudentID": 6, "Name": "Frank" }, { "StudentID": 7, "Name": "Grace" }, { "StudentID": 8, "Name": "Helen" } ], "Courses": [ { "CourseID": 101, "CourseName": "Math", "StudentID": 1 }, { "CourseID": 102, "CourseName": "Science", "StudentID": 2 }, { "CourseID": 103, "CourseName": "History", "StudentID": 4 }, { "CourseID": 104, "CourseName": "English", "StudentID": 9 }, { "CourseID": 105, "CourseName": "Biology", "StudentID": 10 } ] }, "query": "SELECT s.StudentID, s.Name, c.CourseName\nFROM Students s\nFULL OUTER JOIN Courses c ON s.StudentID = c.StudentID;", "explanation": "All students and all courses are returned. Helen and Grace appear with NULL courses (no match), while English, Biology appear with NULL students (no student enrolled).", "use_case": "When you want to identify records that don’t match on both sides (e.g., students without courses and courses without students)." }, "complex_example": { "datasets": { "Suppliers": [ { "SupplierID": 1, "SupplierName": "Global Traders", "City": "New York" }, { "SupplierID": 2, "SupplierName": "City Wholesale", "City": "Chicago" }, { "SupplierID": 3, "SupplierName": "Ocean Foods", "City": "Boston" }, { "SupplierID": 4, "SupplierName": "Farm Fresh", "City": "Seattle" }, { "SupplierID": 5, "SupplierName": "TechSource", "City": "Dallas" }, { "SupplierID": 6, "SupplierName": "MediSupply", "City": "Houston" }, { "SupplierID": 7, "SupplierName": "AgroMart", "City": "Denver" }, { "SupplierID": 8, "SupplierName": "FastParts", "City": "Austin" } ], "Products": [ { "ProductID": 201, "ProductName": "Apples", "SupplierID": 1 }, { "ProductID": 202, "ProductName": "Oranges", "SupplierID": 2 }, { "ProductID": 203, "ProductName": "Bananas", "SupplierID": 4 }, { "ProductID": 204, "ProductName": "Laptops", "SupplierID": 5 }, { "ProductID": 205, "ProductName": "Masks", "SupplierID": 6 }, { "ProductID": 206, "ProductName": "Gloves", "SupplierID": 10 }, { "ProductID": 207, "ProductName": "Chairs", "SupplierID": 11 }, { "ProductID": 208, "ProductName": "Tomatoes", "SupplierID": 3 } ] }, "query": "SELECT s.SupplierName, s.City, p.ProductName\nFROM Suppliers s\nFULL OUTER JOIN Products p ON s.SupplierID = p.SupplierID;", "explanation": "All suppliers and products are included. FastParts (SupplierID 8) appears without products, while Gloves and Chairs appear with no matching supplier.", "use_case": "Useful in supply chain management to see both suppliers without products and products without suppliers." } },
+            "SELF_JOIN": { "description": "A SELF JOIN is a regular join where a table is joined with itself. It is useful for comparing rows within the same table.", "uses": "Often used to find hierarchical relationships (e.g., employees and managers) or to compare rows within the same dataset.", "simple_example": { "datasets": { "Employees": [ { "EmployeeID": 1, "Name": "Alice", "ManagerID": null }, { "EmployeeID": 2, "Name": "Bob", "ManagerID": 1 }, { "EmployeeID": 3, "Name": "Charlie", "ManagerID": 1 }, { "EmployeeID": 4, "Name": "David", "ManagerID": 2 }, { "EmployeeID": 5, "Name": "Eva", "ManagerID": 2 }, { "EmployeeID": 6, "Name": "Frank", "ManagerID": 3 }, { "EmployeeID": 7, "Name": "Grace", "ManagerID": 4 }, { "EmployeeID": 8, "Name": "Helen", "ManagerID": 5 } ] }, "query": "SELECT e.Name AS Employee, m.Name AS Manager\nFROM Employees e\nLEFT JOIN Employees m ON e.ManagerID = m.EmployeeID;", "explanation": "Each employee is paired with their manager from the same table. Alice appears with NULL since she has no manager (top level).", "use_case": "To build org charts or hierarchies (employees reporting to managers)." }, "complex_example": { "datasets": { "Projects": [ { "ProjectID": 101, "ProjectName": "Alpha", "ParentProjectID": null }, { "ProjectID": 102, "ProjectName": "Beta", "ParentProjectID": 101 }, { "ProjectID": 103, "ProjectName": "Gamma", "ParentProjectID": 101 }, { "ProjectID": 104, "ProjectName": "Delta", "ParentProjectID": 102 }, { "ProjectID": 105, "ProjectName": "Epsilon", "ParentProjectID": 102 }, { "ProjectID": 106, "ProjectName": "Zeta", "ParentProjectID": 103 }, { "ProjectID": 107, "ProjectName": "Eta", "ParentProjectID": 104 }, { "ProjectID": 108, "ProjectName": "Theta", "ParentProjectID": 105 } ] }, "query": "SELECT p.ProjectName AS ChildProject, parent.ProjectName AS ParentProject\nFROM Projects p\nLEFT JOIN Projects parent ON p.ParentProjectID = parent.ProjectID;", "explanation": "Projects are linked to their parent projects from the same table. For example, Beta and Gamma are children of Alpha. Delta is a child of Beta, etc.", "use_case": "Useful in project management systems to represent dependencies or subprojects." } },
+            "CROSS_JOIN": { "description": "A CROSS JOIN returns the Cartesian product of two tables. Each row from the first table is combined with every row from the second table.", "uses": "Used when generating combinations of items (e.g., products and colors, students and subjects). Be cautious as the result set can grow very large.", "simple_example": { "datasets": { "Products": [ { "ProductID": 1, "ProductName": "Shirt" }, { "ProductID": 2, "ProductName": "Pants" }, { "ProductID": 3, "ProductName": "Shoes" }, { "ProductID": 4, "ProductName": "Jacket" }, { "ProductID": 5, "ProductName": "Hat" }, { "ProductID": 6, "ProductName": "Socks" }, { "ProductID": 7, "ProductName": "Scarf" }, { "ProductID": 8, "ProductName": "Gloves" } ], "Colors": [ { "ColorID": "A", "ColorName": "Red" }, { "ColorID": "B", "ColorName": "Blue" }, { "ColorID": "C", "ColorName": "Green" }, { "ColorID": "D", "ColorName": "Black" }, { "ColorID": "E", "ColorName": "White" }, { "ColorID": "F", "ColorName": "Yellow" }, { "ColorID": "G", "ColorName": "Gray" }, { "ColorID": "H", "ColorName": "Purple" } ] }, "query": "SELECT p.ProductName, c.ColorName\nFROM Products p\nCROSS JOIN Colors c;", "explanation": "Each product is matched with every color, generating all possible combinations (8 products × 8 colors = 64 rows).", "use_case": "Useful when generating product variations (e.g., Shirts in multiple colors)." }, "complex_example": { "datasets": { "Students": [ { "StudentID": 1, "Name": "Alice" }, { "StudentID": 2, "Name": "Bob" }, { "StudentID": 3, "Name": "Charlie" }, { "StudentID": 4, "Name": "David" }, { "StudentID": 5, "Name": "Eva" }, { "StudentID": 6, "Name": "Frank" }, { "StudentID": 7, "Name": "Grace" }, { "StudentID": 8, "Name": "Helen" } ], "Subjects": [ { "SubjectID": "M1", "SubjectName": "Math" }, { "SubjectID": "S1", "SubjectName": "Science" }, { "SubjectID": "E1", "SubjectName": "English" }, { "SubjectID": "H1", "SubjectName": "History" }, { "SubjectID": "G1", "SubjectName": "Geography" }, { "SubjectID": "P1", "SubjectName": "Physics" }, { "SubjectID": "C1", "SubjectName": "Chemistry" }, { "SubjectID": "B1", "SubjectName": "Biology" } ] }, "query": "SELECT s.Name, subj.SubjectName\nFROM Students s\nCROSS JOIN Subjects subj;", "explanation": "Every student is paired with every subject, generating 64 rows (8×8). This can then be filtered for scheduling or allocation.", "use_case": "Used for timetables, course registrations, or to create all possible student-subject combinations before applying filters." } },
+            "ANTI_JOIN": { "description": "An ANTI JOIN returns rows from the left table that do NOT have matching rows in the right table.", "uses": "Used to find unmatched records, e.g., customers with no orders, employees without assigned departments.", "simple_example": { "datasets": { "Customers": [ { "CustomerID": 1, "CustomerName": "Alice" }, { "CustomerID": 2, "CustomerName": "Bob" }, { "CustomerID": 3, "CustomerName": "Charlie" }, { "CustomerID": 4, "CustomerName": "David" }, { "CustomerID": 5, "CustomerName": "Eva" }, { "CustomerID": 6, "CustomerName": "Frank" }, { "CustomerID": 7, "CustomerName": "Grace" }, { "CustomerID": 8, "CustomerName": "Helen" } ], "Orders": [ { "OrderID": 101, "CustomerID": 1 }, { "OrderID": 102, "CustomerID": 2 }, { "OrderID": 103, "CustomerID": 4 }, { "OrderID": 104, "CustomerID": 6 }, { "OrderID": 105, "CustomerID": 8 } ] }, "query": "SELECT c.CustomerName\nFROM Customers c\nLEFT JOIN Orders o ON c.CustomerID = o.CustomerID\nWHERE o.CustomerID IS NULL;", "explanation": "This query finds customers who have not placed any orders (Charlie, Eva, Grace).", "use_case": "Used to identify inactive customers who have never made a purchase." }, "complex_example": { "datasets": { "Employees": [ { "EmployeeID": 1, "Name": "Alice" }, { "EmployeeID": 2, "Name": "Bob" }, { "EmployeeID": 3, "Name": "Charlie" }, { "EmployeeID": 4, "Name": "David" }, { "EmployeeID": 5, "Name": "Eva" }, { "EmployeeID": 6, "Name": "Frank" }, { "EmployeeID": 7, "Name": "Grace" }, { "EmployeeID": 8, "Name": "Helen" } ], "Projects": [ { "ProjectID": "P1", "EmployeeID": 2 }, { "ProjectID": "P2", "EmployeeID": 3 }, { "ProjectID": "P3", "EmployeeID": 5 }, { "ProjectID": "P4", "EmployeeID": 7 } ] }, "query": "SELECT e.Name\nFROM Employees e\nLEFT JOIN Projects p ON e.EmployeeID = p.EmployeeID\nWHERE p.EmployeeID IS NULL;", "explanation": "This finds employees not assigned to any project (Alice, David, Frank, Helen).", "use_case": "Used to identify employees who are idle or need project allocation." } },
+            "SEMI_JOIN": { "description": "A SEMI JOIN returns rows from the left table where a match exists in the right table, but does not return duplicate columns from the right table.", "uses": "Used to filter records based on existence in another table. Unlike INNER JOIN, it doesn’t return data from the right table.", "simple_example": { "datasets": { "Customers": [ { "CustomerID": 1, "CustomerName": "Alice" }, { "CustomerID": 2, "CustomerName": "Bob" }, { "CustomerID": 3, "CustomerName": "Charlie" }, { "CustomerID": 4, "CustomerName": "David" }, { "CustomerID": 5, "CustomerName": "Eva" }, { "CustomerID": 6, "CustomerName": "Frank" }, { "CustomerID": 7, "CustomerName": "Grace" }, { "CustomerID": 8, "CustomerName": "Helen" } ], "Orders": [ { "OrderID": 101, "CustomerID": 2 }, { "OrderID": 102, "CustomerID": 4 }, { "OrderID": 103, "CustomerID": 6 }, { "OrderID": 104, "CustomerID": 8 } ] }, "query": "SELECT c.CustomerName\nFROM Customers c\nWHERE EXISTS (SELECT 1 FROM Orders o WHERE o.CustomerID = c.CustomerID);", "explanation": "This returns customers who have placed at least one order (Bob, David, Frank, Helen). Unlike INNER JOIN, it only lists customer names without repeating order data.", "use_case": "Quickly check which customers are active without needing order details." }, "complex_example": { "datasets": { "Students": [ { "StudentID": 1, "Name": "Alice" }, { "StudentID": 2, "Name": "Bob" }, { "StudentID": 3, "Name": "Charlie" }, { "StudentID": 4, "Name": "David" }, { "StudentID": 5, "Name": "Eva" }, { "StudentID": 6, "Name": "Frank" }, { "StudentID": 7, "Name": "Grace" }, { "StudentID": 8, "Name": "Helen" } ], "Enrollments": [ { "CourseID": "C101", "StudentID": 1 }, { "CourseID": "C102", "StudentID": 2 }, { "CourseID": "C103", "StudentID": 3 }, { "CourseID": "C101", "StudentID": 5 }, { "CourseID": "C102", "StudentID": 7 } ] }, "query": "SELECT s.Name\nFROM Students s\nWHERE EXISTS (SELECT 1 FROM Enrollments e WHERE e.StudentID = s.StudentID);", "explanation": "This lists students who are enrolled in at least one course (Alice, Bob, Charlie, Eva, Grace). The right table data (course info) is not returned.", "use_case": "Check if students are enrolled in courses without needing course details." } },
+            "EQUI_JOIN": { "description": "An EQUI JOIN is a join condition that uses the equality operator (=) to match rows from both tables.", "uses": "Commonly used in SQL (INNER JOIN is essentially an equi join) when you want to retrieve related rows based on exact matches.", "simple_example": { "datasets": { "Customers": [ { "CustID": 1, "Name": "Alice" }, { "CustID": 2, "Name": "Bob" }, { "CustID": 3, "Name": "Charlie" }, { "CustID": 4, "Name": "David" } ], "Orders": [ { "OrderID": 101, "CustID": 2, "Amount": 200 }, { "OrderID": 102, "CustID": 3, "Amount": 300 }, { "OrderID": 103, "CustID": 1, "Amount": 150 } ] }, "query": "SELECT Customers.Name, Orders.Amount\nFROM Customers, Orders\nWHERE Customers.CustID = Orders.CustID;", "explanation": "The equi join condition matches CustID in both tables. The result includes Alice, Bob, Charlie with their order amounts.", "use_case": "Simple condition joins where equality is the only requirement." }, "complex_example": { "datasets": { "Suppliers": [ { "SupplierID": 1, "SupplierName": "Dell" }, { "SupplierID": 2, "SupplierName": "HP" }, { "SupplierID": 3, "SupplierName": "Lenovo" } ], "Products": [ { "ProductID": 101, "ProductName": "Laptop", "SupplierID": 1 }, { "ProductID": 102, "ProductName": "Printer", "SupplierID": 2 }, { "ProductID": 103, "ProductName": "Monitor", "SupplierID": 1 }, { "ProductID": 104, "ProductName": "Keyboard", "SupplierID": 3 } ] }, "query": "SELECT Suppliers.SupplierName, Products.ProductName\nFROM Suppliers, Products\nWHERE Suppliers.SupplierID = Products.SupplierID;", "explanation": "This returns all products along with their suppliers by joining on SupplierID using equality condition.", "use_case": "Useful in inventory or procurement systems where items must match exact supplier IDs." } }
+        };
+
+        const dom = {
+            joinButtonsContainer: document.getElementById('join-buttons-container'),
+            exampleSelectorContainer: document.getElementById('example-selector-container'),
+            leftTableContainer: document.getElementById('left-table-container'),
+            rightTableContainer: document.getElementById('right-table-container'),
+            resultTableContainer: document.getElementById('result-table-container'),
+            joinInfoContainer: document.getElementById('join-info-container'),
+            statusText: document.getElementById('status-text'),
+            statusDetail: document.getElementById('status-detail'),
+            vennDiagramContainer: document.getElementById('venn-diagram-container'),
+            vennFills: document.getElementById('venn-fills').children
+        };
+        
+        let state = {
+            currentJoinType: 'inner-join',
+            currentExampleIndex: 0,
+            animationTimeout: null,
+            isAnimating: false
+        };
+
+        const sleep = (ms) => new Promise(resolve => state.animationTimeout = setTimeout(resolve, ms));
+        
+        function initializeControls() {
+            Object.keys(fullJoinData).forEach((joinKey, index) => {
+                const button = document.createElement('button');
+                const joinId = joinKey.toLowerCase().replace(/_/g, '-');
+                button.className = 'join-btn';
+                button.dataset.join = joinId;
+                button.innerHTML = `<span class="material-symbols-outlined">${getIconForJoin(joinId)}</span>${joinKey.replace(/_/g, ' ')}`;
+                if (index === 0) {
+                    button.classList.add('active');
+                    state.currentJoinType = joinId;
+                }
+                
+                button.addEventListener('click', () => {
+                    if (state.isAnimating) return;
+                    state.currentJoinType = joinId;
+                    state.currentExampleIndex = 0;
+                    document.querySelectorAll('.join-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateExampleSelector();
+                    runAnimation();
+                });
+                dom.joinButtonsContainer.appendChild(button);
+            });
+            updateExampleSelector();
+        }
+
+        function updateExampleSelector() {
+            const joinKey = state.currentJoinType.toUpperCase().replace(/-/g, '_');
+            const join = fullJoinData[joinKey];
+            const examples = [join.simple_example, join.complex_example].filter(Boolean);
+
+            if (!join || examples.length <= 1) {
+                dom.exampleSelectorContainer.innerHTML = '';
+                return;
+            }
+            
+            let toggleHTML = `<div class="bg-gray-700 p-1 rounded-full flex items-center">`;
+            examples.forEach((example, index) => {
+                const level = index === 0 ? 'Simple' : 'Complex';
+                const isActive = index === state.currentExampleIndex;
+                toggleHTML += `<button data-index="${index}" class="example-toggle-btn ${isActive ? 'bg-violet-500 text-white' : 'text-gray-300'} px-4 py-1.5 text-sm font-semibold rounded-full transition-colors">${level}</button>`;
+            });
+            toggleHTML += `</div>`;
+            dom.exampleSelectorContainer.innerHTML = toggleHTML;
+
+            document.querySelectorAll('.example-toggle-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    if (state.isAnimating) return;
+                    state.currentExampleIndex = parseInt(e.currentTarget.dataset.index);
+                    document.querySelectorAll('.example-toggle-btn').forEach(btn => btn.classList.remove('bg-violet-500', 'text-white'));
+                    e.currentTarget.classList.add('bg-violet-500', 'text-white');
+                    runAnimation();
+                });
+            });
+        }
+
+        function highlightSQL(sql) {
+            return sql.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/\b(SELECT|FROM|AS|ON|INNER JOIN|LEFT JOIN|RIGHT JOIN|FULL OUTER JOIN|CROSS JOIN|SELF JOIN|ANTI JOIN|SEMI JOIN|WHERE|IS NULL|EXISTS)\b/gi, '<span class="sql-keyword">$1</span>')
+                .replace(/\b([a-zA-Z_]+\.)/g, '<span class="sql-alias">$1</span>');
+        }
+
+        function updateJoinInfo(join, example) {
+            dom.joinInfoContainer.innerHTML = `
+                <h3 class="text-xl font-bold text-violet-300 mb-1">${state.currentJoinType.replace(/-/g, ' ').toUpperCase()} <span class="text-base font-medium text-slate-400">(${state.currentExampleIndex === 0 ? 'Simple' : 'Complex'})</span></h3>
+                <p class="text-slate-300 text-sm mb-2"><strong>Use Case:</strong> ${example.use_case}</p>
+                <p class="text-slate-300 text-sm mb-4"><strong>Explanation:</strong> ${example.explanation}</p>
+                <div class="bg-gray-900/70 rounded-lg relative">
+                    <pre class="p-4 pt-5 font-code"><code class="font-mono">${highlightSQL(example.query)}</code></pre>
+                    <button onclick="copyQuery(this)" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white p-1.5 rounded-full flex items-center justify-center transition-colors">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
+                    </button>
+                </div>`;
+        }
+        
+        function updateVennDiagram() {
+            const vennMap = {
+                'inner-join': [0, 0, 1], 'left-join': [1, 0, 1], 'right-join': [0, 1, 1],
+                'full-outer-join': [1, 1, 1], 'anti-join': [1, 0, 0], 'semi-join': [0, 0, 1],
+                'self-join': [1, 0, 1], 'equi-join': [0, 0, 1]
+            };
+            const opacities = vennMap[state.currentJoinType];
+            
+            if (opacities) {
+                dom.vennDiagramContainer.style.display = 'flex';
+                Array.from(dom.vennFills).forEach((path, i) => path.style.opacity = opacities[i]);
+                dom.vennDiagramContainer.querySelectorAll('.venn-circle').forEach(c => { c.style.animation = 'none'; c.offsetHeight; c.style.animation = ''; });
+            } else {
+                dom.vennDiagramContainer.style.display = 'none';
+            }
+        }
+
+        function createTableHTML(title, data, keys = []) {
+            if (!data || data.length === 0) return `<div class="header">${title}</div><div class="p-2 text-xs text-center text-slate-400">No data</div>`;
+            const headers = Object.keys(data[0]);
+            const headerHTML = headers.map(h => `<th class="${keys.includes(h) ? 'key-col' : ''}">${h}</th>`).join('');
+            const rowsHTML = data.map((row, rowIndex) => {
+                const cellsHTML = headers.map(header => `<td class="${keys.includes(header) ? 'key-col' : ''}">${row[header] === null ? '<i class="null-value">NULL</i>' : String(row[header])}</td>`).join('');
+                return `<tr data-row-index="${rowIndex}">${cellsHTML}</tr>`;
+            }).join('');
+            return `<div class="header">${title}</div><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr>${headerHTML}</tr></thead><tbody>${rowsHTML}</tbody></table></div>`;
+        }
+
+        function findJoinKeys(leftData, rightData, joinType) {
+            if (joinType === 'self-join') {
+                const idKey = Object.keys(leftData[0]).find(k => k.toLowerCase().includes('id') && !k.toLowerCase().includes('parent') && !k.toLowerCase().includes('manager'));
+                const parentKey = Object.keys(leftData[0]).find(k => k.toLowerCase().includes('id') && (k.toLowerCase().includes('parent') || k.toLowerCase().includes('manager')));
+                return { leftKey: parentKey, rightKey: idKey };
+            }
+            const leftKeys = Object.keys(leftData[0]);
+            const rightKeys = Object.keys(rightData[0]);
+            for (const lKey of leftKeys) {
+                if (rightKeys.includes(lKey) && lKey.toLowerCase().includes('id')) {
+                    return { leftKey: lKey, rightKey: lKey };
+                }
+            }
+            return { leftKey: null, rightKey: null };
+        }
+        
+        async function runAnimation() {
+            state.isAnimating = true;
+            clearTimeout(state.animationTimeout);
+
+            const joinKey = state.currentJoinType.toUpperCase().replace(/-/g, '_');
+            const join = fullJoinData[joinKey];
+            const example = state.currentExampleIndex === 0 ? join.simple_example : join.complex_example;
+            
+            const tableNames = Object.keys(example.datasets);
+            const leftTableName = tableNames[0];
+            const rightTableName = tableNames.length > 1 ? tableNames[1] : tableNames[0];
+            const leftData = example.datasets[leftTableName];
+            const rightData = example.datasets[rightTableName];
+            const { leftKey, rightKey } = findJoinKeys(leftData, rightData, state.currentJoinType);
+            
+            updateJoinInfo(join, example);
+            updateVennDiagram();
+
+            dom.leftTableContainer.innerHTML = createTableHTML(leftTableName, leftData, [leftKey]);
+            dom.rightTableContainer.innerHTML = createTableHTML(rightTableName, rightData, [rightKey]);
+            dom.resultTableContainer.innerHTML = createTableHTML('Result Set', []);
+
+            const leftRows = dom.leftTableContainer.querySelectorAll('tbody tr');
+            const rightRows = dom.rightTableContainer.querySelectorAll('tbody tr');
+            let resultData = [];
+            let matchedRightIndices = new Set();
+            
+            await sleep(50);
+            
+            const drivingTable = (state.currentJoinType === 'right-join') ? rightRows : leftRows;
+            const otherTable = (state.currentJoinType === 'right-join') ? leftRows : rightRows;
+            const drivingData = (state.currentJoinType === 'right-join') ? rightData : leftData;
+            const otherData = (state.currentJoinType === 'right-join') ? leftData : rightData;
+            
+            for (let i = 0; i < drivingTable.length; i++) {
+                const dRow = drivingTable[i];
+                const dData = drivingData[i];
+                let matchFound = false;
+                updateStatus(`Comparing`, `Row ${i+1} from ${state.currentJoinType === 'right-join' ? rightTableName : leftTableName}...`, 'sync');
+                dRow.classList.add('row-comparing');
+                await sleep(50);
+
+                for (let j = 0; j < otherTable.length; j++) {
+                    const oRow = otherTable[j];
+                    const oData = otherData[j];
+                    await sleep(25);
+
+                    const dKey = (state.currentJoinType === 'right-join') ? dData[rightKey] : dData[leftKey];
+                    const oKey = (state.currentJoinType === 'right-join') ? oData[leftKey] : oData[rightKey];
+
+                    if (dKey !== null && dKey === oKey) {
+                        matchFound = true;
+                        matchedRightIndices.add(j);
+                        dRow.classList.add('row-match');
+                        oRow.classList.add('row-match');
+                        updateStatus(`Match Found!`, `Key: ${dKey}`, 'done');
+                        const combinedData = (state.currentJoinType === 'right-join') ? { ...oData, ...dData } : { ...dData, ...oData };
+                        resultData.push(combinedData);
+                        updateResultTable(resultData, leftData, rightData);
+                        await sleep(75);
+                        dRow.classList.remove('row-match');
+                        oRow.classList.remove('row-match');
+                    }
+                }
+                
+                if (!matchFound && ['left-join', 'full-outer-join', 'self-join', 'anti-join'].includes(state.currentJoinType)) {
+                     updateStatus(`No Match`, `Keeping row from ${leftTableName}`, 'close');
+                    dRow.classList.add('row-no-match');
+                    const nullPaddedRight = Object.keys(rightData[0]).reduce((acc, key) => ({ ...acc, [key]: null }), {});
+                    resultData.push({ ...dData, ...nullPaddedRight });
+                    updateResultTable(resultData, leftData, rightData);
+                    await sleep(75);
+                    dRow.classList.remove('row-no-match');
+                }
+                dRow.classList.remove('row-comparing');
+            }
+
+            if (['right-join', 'full-outer-join'].includes(state.currentJoinType)) {
+                for (let j = 0; j < rightRows.length; j++) {
+                    if (!matchedRightIndices.has(j)) {
+                        const rRow = rightRows[j];
+                        updateStatus(`Unmatched Right`, `Keeping row from ${rightTableName}`, 'add');
+                        rRow.classList.add('row-no-match');
+                        const nullPaddedLeft = Object.keys(leftData[0]).reduce((acc, key) => ({ ...acc, [key]: null }), {});
+                        resultData.push({ ...nullPaddedLeft, ...rightData[j] });
+                        updateResultTable(resultData, leftData, rightData);
+                        await sleep(75);
+                        rRow.classList.remove('row-no-match');
+                    }
+                }
+            }
+            
+            updateStatus('Animation Complete', `${resultData.length} rows in result set.`, 'celebration');
+            state.isAnimating = false;
+        }
+        
+        function updateResultTable(resultData, leftData, rightData) {
+            const finalData = resultData.map(row => {
+                const newRow = {...row};
+                const leftKeys = Object.keys(leftData[0]);
+                const rightKeys = Object.keys(rightData[0]);
+                const allKeys = [...new Set([...leftKeys, ...rightKeys])];
+                const finalRow = {};
+                allKeys.forEach(key => {
+                    if(newRow[key] !== undefined) finalRow[key] = newRow[key];
+                });
+                return finalRow;
+            });
+            
+            if (finalData.length > 0) {
+                const { leftKey, rightKey } = findJoinKeys(finalData, finalData, state.currentJoinType);
+                dom.resultTableContainer.innerHTML = createTableHTML('Result Set', finalData, [leftKey, rightKey]);
+                dom.resultTableContainer.querySelector('tbody tr:last-child')?.classList.add('row-final');
+            } else {
+                dom.resultTableContainer.innerHTML = createTableHTML('Result Set', []);
+            }
+        }
+
+        function updateStatus(text, detail, icon) {
+            dom.statusText.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${text}`;
+            dom.statusDetail.textContent = detail;
+        }
+        
+        function getIconForJoin(joinId) {
+            const icons = { 'inner-join': 'link', 'left-join': 'subdirectory_arrow_left', 'right-join': 'subdirectory_arrow_right', 'full-outer-join': 'fullscreen', 'cross-join': 'close', 'self-join': 'sync', 'anti-join': 'link_off', 'semi-join': 'check_circle', 'equi-join': 'equal' };
+            return icons[joinId] || 'link';
+        }
+
+        window.copyQuery = (btn) => {
+            const code = btn.previousElementSibling.querySelector('code');
+            const textArea = document.createElement('textarea');
+            textArea.value = code.innerText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 18px;">done</span>`;
+            setTimeout(() => { btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>`; }, 2000);
+        };
+
+        initializeControls();
+        runAnimation();
+
+        // Dropdown handler
+        const navDropdownButton = document.getElementById('nav-dropdown-button');
+        const navDropdownContent = document.getElementById('nav-dropdown-content');
+        navDropdownButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navDropdownContent.classList.toggle('hidden');
+        });
+        document.addEventListener('click', () => {
+            navDropdownContent.classList.add('hidden');
+        });
+    });
+    </script>
+</body>
+</html>
