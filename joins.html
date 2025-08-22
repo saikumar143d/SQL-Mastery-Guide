@@ -267,11 +267,14 @@
                 <h3 class="text-xl font-bold text-violet-300 mb-1">${state.currentJoinType.replace(/-/g, ' ').toUpperCase()} <span class="text-base font-medium text-slate-400">(${state.currentExampleIndex === 0 ? 'Simple' : 'Complex'})</span></h3>
                 <p class="text-slate-300 text-sm mb-2"><strong>Use Case:</strong> ${example.use_case}</p>
                 <p class="text-slate-300 text-sm mb-4"><strong>Explanation:</strong> ${example.explanation}</p>
-                <div class="bg-gray-900/70 rounded-lg relative">
-                    <pre class="p-4 pt-5 font-code"><code class="font-mono">${highlightSQL(example.query)}</code></pre>
-                    <button onclick="copyQuery(this)" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white p-1.5 rounded-full flex items-center justify-center transition-colors">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
-                    </button>
+                <div class="bg-gray-900/70 rounded-lg">
+                    <div class="flex justify-between items-center bg-gray-900/50 px-4 py-2 rounded-t-lg">
+                        <span class="text-xs font-semibold text-gray-400">SQL QUERY</span>
+                        <button onclick="copyQuery(this)" class="bg-slate-600 hover:bg-slate-500 text-white p-1.5 rounded-md flex items-center justify-center transition-colors">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                        </button>
+                    </div>
+                    <pre class="p-4 font-code"><code class="font-mono">${highlightSQL(example.query)}</code></pre>
                 </div>`;
         }
         
@@ -448,15 +451,15 @@
         }
 
         window.copyQuery = (btn) => {
-            const code = btn.previousElementSibling.querySelector('code');
+            const code = btn.closest('.relative').querySelector('code');
             const textArea = document.createElement('textarea');
             textArea.value = code.innerText;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 18px;">done</span>`;
-            setTimeout(() => { btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>`; }, 2000);
+            btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">done</span>`;
+            setTimeout(() => { btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>`; }, 2000);
         };
 
         initializeControls();
