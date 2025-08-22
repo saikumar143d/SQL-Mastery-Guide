@@ -74,28 +74,44 @@
 </head>
 <body class="p-4 sm:p-6">
     <header class="w-full mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="flex-1 flex justify-start">
+        <div class="w-full flex items-center justify-between md:flex-1 md:justify-start">
              <a href="index.html" class="inline-flex items-center gap-3 text-slate-200">
                 <span class="material-symbols-outlined text-violet-400" style="font-size: 32px;">database</span>
                 <h1 class="font-bold font-heading text-2xl">SQL Guide</h1>
             </a>
+            <div class="flex items-center gap-3 md:hidden">
+                 <a href="joins.html" class="nav-btn active"><span class="material-symbols-outlined" style="font-size: 1.25rem;">link</span></a>
+                 <div class="relative" id="nav-dropdown-menu-mobile">
+                    <button id="nav-dropdown-button-mobile" class="nav-btn">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div id="nav-dropdown-content-mobile" class="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg border border-gray-600 hidden z-20">
+                        <a href="foundations.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Foundations</a>
+                        <a href="setup.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Setup</a>
+                        <a href="commands.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Commands</a>
+                        <a href="keywords.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Keywords</a>
+                        <a href="advanced.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Advanced</a>
+                        <a href="interview.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Interview Prep</a>
+                        <a href="ai.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">AI Assistant</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="flex-1 flex justify-center" id="example-selector-container">
+        <div class="w-full md:w-auto md:flex-1 flex justify-center" id="example-selector-container">
             <!-- Example selector will be injected here -->
         </div>
-        <div class="flex-1 flex justify-end items-center gap-3">
+        <div class="hidden md:flex flex-1 justify-end items-center gap-3">
             <a href="joins.html" class="nav-btn active"><span class="material-symbols-outlined" style="font-size: 1.25rem;">link</span>JOINs</a>
-            <div class="relative" id="nav-dropdown-menu">
-                <button id="nav-dropdown-button" class="nav-btn">
+            <div class="relative" id="nav-dropdown-menu-desktop">
+                <button id="nav-dropdown-button-desktop" class="nav-btn">
                     <span class="material-symbols-outlined">menu</span>
                     Navigate
                 </button>
-                <div id="nav-dropdown-content" class="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg border border-gray-600 hidden z-20">
+                <div id="nav-dropdown-content-desktop" class="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg border border-gray-600 hidden z-20">
                     <a href="foundations.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Foundations</a>
                     <a href="setup.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Setup</a>
                     <a href="commands.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Commands</a>
-                    <a href="keywords.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Keywords</a>
-                    <a href="advanced.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Advanced</a>
+                    <a href="keywords.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Advanced</a>
                     <a href="interview.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Interview Prep</a>
                     <a href="ai.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">AI Assistant</a>
                 </div>
@@ -184,7 +200,13 @@
                 const joinId = joinKey.toLowerCase().replace(/_/g, '-');
                 button.className = 'join-btn';
                 button.dataset.join = joinId;
-                button.innerHTML = `<span class="material-symbols-outlined">${getIconForJoin(joinId)}</span>${joinKey.replace(/_/g, ' ')}`;
+                
+                let buttonText = joinKey.replace(/_/g, ' ');
+                if (buttonText.toLowerCase().includes('join')) {
+                    buttonText = buttonText.replace(/ join/i, '<span class="hidden sm:inline"> JOIN</span>');
+                }
+
+                button.innerHTML = `<span class="material-symbols-outlined">${getIconForJoin(joinId)}</span>${buttonText}`;
                 if (index === 0) {
                     button.classList.add('active');
                     state.currentJoinType = joinId;
@@ -440,15 +462,24 @@
         initializeControls();
         runAnimation();
 
-        // Dropdown handler
-        const navDropdownButton = document.getElementById('nav-dropdown-button');
-        const navDropdownContent = document.getElementById('nav-dropdown-content');
-        navDropdownButton.addEventListener('click', (e) => {
+        // Dropdown handlers
+        const navDropdownButtonDesktop = document.getElementById('nav-dropdown-button-desktop');
+        const navDropdownContentDesktop = document.getElementById('nav-dropdown-content-desktop');
+        navDropdownButtonDesktop.addEventListener('click', (e) => {
             e.stopPropagation();
-            navDropdownContent.classList.toggle('hidden');
+            navDropdownContentDesktop.classList.toggle('hidden');
         });
+
+        const navDropdownButtonMobile = document.getElementById('nav-dropdown-button-mobile');
+        const navDropdownContentMobile = document.getElementById('nav-dropdown-content-mobile');
+        navDropdownButtonMobile.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navDropdownContentMobile.classList.toggle('hidden');
+        });
+
         document.addEventListener('click', () => {
-            navDropdownContent.classList.add('hidden');
+            navDropdownContentDesktop.classList.add('hidden');
+            navDropdownContentMobile.classList.add('hidden');
         });
     });
     </script>
